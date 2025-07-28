@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terminal v2.1 - Personal System</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: #0a0a0a;
+            color: #00d4ff;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .terminal-container {
+            height: 100vh;
+            background: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 212, 255, 0.03) 2px,
+                    rgba(0, 212, 255, 0.03) 4px
+                ),
+                radial-gradient(ellipse at center, #0a0a0a 0%, #000000 100%);
+            border: 3px solid #00d4ff;
+            border-radius: 8px;
+            position: relative;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+        }
+
+        .terminal-header {
+            background: #00d4ff;
+            color: #000;
+            padding: 12px 20px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 5px 5px 0 0;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+
+        .terminal-content {
+            display: grid;
+            grid-template-columns: 1fr 400px 1fr;
+            height: calc(100vh - 50px);
+            padding: 20px;
+            gap: 20px;
+        }
+
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .menu-section {
+            margin-bottom: 30px;
+        }
+
+        .menu-title {
+            color: #00d4ff;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px #00d4ff;
+            letter-spacing: 2px;
+        }
+
+        .menu-item {
+            padding: 10px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            padding-left: 15px;
+            font-size: 16px;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            color: #ffffff;
+            border-left-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+            text-shadow: 0 0 5px #00d4ff;
+            transform: translateX(5px);
+        }
+
+        .graph-container {
+            position: relative;
+            height: 100%;
+            border: 2px solid #00d4ff;
+            border-radius: 8px;
+            background: rgba(0, 212, 255, 0.05);
+            overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(0, 212, 255, 0.1);
+        }
+
+        .graph-title {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #00d4ff;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 10;
+            background: #0a0a0a;
+            padding: 5px 15px;
+            border: 1px solid #00d4ff;
+            border-radius: 4px;
+            letter-spacing: 1px;
+        }
+
+        #graph {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+        }
+
+        #graph canvas {
+            border-radius: 6px;
+        }
+
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .avatar-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+            position: relative;
+        }
+
+        .avatar-frame {
+            width: 220px;
+            height: 270px;
+            border: 3px solid #00d4ff;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 
+                0 0 20px rgba(0, 212, 255, 0.4),
+                inset 0 0 20px rgba(0, 212, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .avatar-frame::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 1px,
+                rgba(0, 212, 255, 0.1) 1px,
+                rgba(0, 212, 255, 0.1) 2px
+            );
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .avatar-image {
+            width: 200px;
+            height: 250px;
+            object-fit: cover;
+            filter: 
+                hue-rotate(60deg) 
+                saturate(1.2) 
+                brightness(1.1)
+                drop-shadow(0 0 10px rgba(0, 212, 255, 0.5));
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+            position: relative;
+            z-index: 1;\n            transition: all 0.3s ease;
+        }
+
+        .avatar-label {
+            position: absolute;
+            bottom: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid #00d4ff;
+            padding: 5px 15px;
+            font-size: 10px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            color: #00d4ff;
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+        }
+
+        .system-info {
+            background: rgba(0, 212, 255, 0.1);
+            border: 2px solid #00d4ff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            width: 100%;
+            font-size: 12px;
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
+        }
+
+        .system-info h3 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+
+        .status-line {
+            display: flex;
+            justify-content: space-between;
+            margin: 2px 0;
+        }
+
+        .content-display {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #00d4ff;
+            border-radius: 8px;
+            padding: 20px;
+            height: 160px;
+            overflow-y: auto;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .content-display.active {
+            opacity: 1;
+        }
+
+        .graph-3d-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .node-label {
+            position: absolute;
+            color: #ffffff;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: bold;
+            pointer-events: none;
+            z-index: 100;
+            text-shadow: 0 0 5px #00d4ff;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 2px 6px;
+            border-radius: 3px;
+            border: 1px solid #00d4ff;
+            transform: translate(-50%, -50%);
+        }
+
+        .cursor {
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .scan-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 212, 255, 0.04) 2px,
+                rgba(0, 212, 255, 0.04) 4px
+            );
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="terminal-container">
+        <div class="terminal-header">
+            <span>PERSONAL_SYSTEM v2.1 - ONLINE</span>
+            <span id="current-time"></span>
+        </div>
+        
+        <div class="terminal-content">
+            <div class="left-panel">
+                <div class="menu-section">
+                    <div class="menu-title">MAIN MENU</div>
+                    <div class="menu-item active" data-section="about" data-category="core">> ABOUT_ME</div>
+                    <div class="menu-item" data-section="projects" data-category="project">> PROJECTS</div>
+                    <div class="menu-item" data-section="blog" data-category="content">> BLOG</div>
+                    <div class="menu-item" data-section="certifications" data-category="cert">> CERTIFICATIONS</div>
+                    <div class="menu-item" data-section="contact" data-category="core">> CONTACT</div>
+                    <div class="menu-item" data-section="work" data-category="work">> WORK_EXPERIENCE</div>
+                    <div class="menu-item" data-section="skills" data-category="content">> SKILLS</div>
+                </div>
+            </div>
+
+            <div class="graph-container">
+                <div class="graph-title">SYSTEM MAP</div>
+                <div id="graph"></div>
+            </div>
+
+            <div class="right-panel">
+                <div class="avatar-container">
+                    <div class="avatar-frame">
+                        <img src="avatar-image.png" alt="Avatar" class="avatar-image">
+                        <div class="avatar-label">USER.PROFILE</div>
+                    </div>
+                </div>
+
+                <div class="system-info">
+                    <h3>SYSTEM STATUS</h3>
+                    <div class="status-line">
+                        <span>CPU:</span>
+                        <span id="cpu-usage">██████░░░░ 60%</span>
+                    </div>
+                    <div class="status-line">
+                        <span>MEM:</span>
+                        <span id="mem-usage">████░░░░░░ 40%</span>
+                    </div>
+                    <div class="status-line">
+                        <span>NET:</span>
+                        <span>CONNECTED</span>
+                    </div>
+                    <div class="status-line">
+                        <span>NODES:</span>
+                        <span id="node-count">5 ACTIVE</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-display" id="content-display">
+            <div id="content-text">
+                Welcome to the system. Select a node from the menu or graph to explore.<span class="cursor">_</span>
+            </div>
+        </div>
+        
+        <div class="scan-lines"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Enhanced Graph data structure with projects, work experience, and certifications
+        const graphData = {
+            nodes: [
+                // Core sections
+                { id: "about", name: "ABOUT", category: "core", x: 200, y: 150 },
+                { id: "contact", name: "CONTACT", category: "core", x: 200, y: 450 },
+                
+                // Projects cluster
+                { id: "project1", name: "PROJECT_A", category: "project", x: 100, y: 250 },
+                { id: "project2", name: "PROJECT_B", category: "project", x: 80, y: 320 },
+                { id: "project3", name: "PROJECT_C", category: "project", x: 120, y: 380 },
+                
+                // Work experience cluster
+                { id: "work1", name: "COMPANY_A", category: "work", x: 300, y: 200 },
+                { id: "work2", name: "COMPANY_B", category: "work", x: 320, y: 270 },
+                { id: "work3", name: "COMPANY_C", category: "work", x: 280, y: 340 },
+                
+                // Certifications cluster
+                { id: "cert1", name: "AWS_CERT", category: "cert", x: 150, y: 300 },
+                { id: "cert2", name: "CLOUD_CERT", category: "cert", x: 250, y: 320 },
+                { id: "cert3", name: "DEV_CERT", category: "cert", x: 200, y: 380 },
+                
+                // Blog/Skills
+                { id: "blog", name: "BLOG", category: "content", x: 350, y: 150 },
+                { id: "skills", name: "SKILLS", category: "content", x: 50, y: 150 }
+            ],
+            links: [
+                // Core connections
+                { source: "about", target: "contact" },
+                { source: "about", target: "blog" },
+                { source: "about", target: "skills" },
+                
+                // Project connections
+                { source: "about", target: "project1" },
+                { source: "project1", target: "project2" },
+                { source: "project2", target: "project3" },
+                { source: "project1", target: "work1" },
+                { source: "project3", target: "cert1" },
+                
+                // Work experience connections
+                { source: "work1", target: "work2" },
+                { source: "work2", target: "work3" },
+                { source: "work1", target: "cert2" },
+                { source: "work2", target: "cert3" },
+                
+                // Certification connections
+                { source: "cert1", target: "cert2" },
+                { source: "cert2", target: "cert3" },
+                { source: "cert1", target: "contact" },
+                
+                // Cross-category connections
+                { source: "blog", target: "project1" },
+                { source: "skills", target: "cert1" },
+                { source: "work3", target: "contact" }
+            ]
+        };
+
+        // Enhanced content for each node
+        const sectionContent = {
+            // Core sections
+            about: "ABOUT_ME.exe loaded...\n\nPassionate developer and problem solver.\nSpecializing in full-stack development and system architecture.\nConstantly learning and exploring new technologies.\n\nSTATUS: ACTIVE\nLOCATION: ~/home/user\nMODE: CONTINUOUS_LEARNING",
+            contact: "CONTACT_PROTOCOLS.init\n\nEmail: user@domain.com\nLinkedIn: /in/username\nGitHub: @username\nTwitter: @handle\n\nResponse Time: <24h\nAvailability: OPEN_TO_OPPORTUNITIES\nPreferred: EMAIL_FIRST",
+            
+            // Projects
+            project1: "PROJECT_A.exe\n\nFull-Stack Web Application\nTech: React, Node.js, PostgreSQL\nStatus: DEPLOYED\nUsers: 1,000+ active\n\nFeatures: Real-time chat, user auth, analytics\nDeployment: AWS EC2, Docker",
+            project2: "PROJECT_B.exe\n\nMobile App Development\nTech: React Native, Firebase\nStatus: PUBLISHED\nDownloads: 5,000+\n\nPlatforms: iOS, Android\nRating: 4.7/5 stars",
+            project3: "PROJECT_C.exe\n\nAI/ML Data Pipeline\nTech: Python, TensorFlow, Apache Kafka\nStatus: PRODUCTION\nData processed: 10TB+\n\nAccuracy: 94%\nLatency: <100ms",
+            
+            // Work Experience
+            work1: "COMPANY_A.log\n\nSoftware Engineer\nDuration: 2022-2024\nTeam Size: 8 developers\n\nProjects: Microservices architecture\nTech: Java, Spring Boot, Kubernetes\nAchievements: 40% performance improvement",
+            work2: "COMPANY_B.log\n\nFull-Stack Developer\nDuration: 2020-2022\nTeam Size: 5 developers\n\nProjects: E-commerce platform\nTech: React, Python, AWS\nAchievements: Led frontend redesign",
+            work3: "COMPANY_C.log\n\nJunior Developer\nDuration: 2019-2020\nTeam Size: 12 developers\n\nProjects: Legacy system migration\nTech: JavaScript, PHP, MySQL\nAchievements: Reduced load times by 60%",
+            
+            // Certifications
+            cert1: "AWS_CERT.credential\n\nAWS Solutions Architect Associate\nIssued: 2023\nValid until: 2026\nScore: 850/1000\n\nSkills: EC2, S3, RDS, Lambda\nProjects: 15+ AWS deployments",
+            cert2: "CLOUD_CERT.credential\n\nGoogle Cloud Professional\nIssued: 2023\nValid until: 2025\nScore: 92%\n\nSkills: GKE, BigQuery, Cloud Functions\nProjects: Multi-cloud architecture",
+            cert3: "DEV_CERT.credential\n\nKubernetes Administrator\nIssued: 2022\nValid until: 2025\nScore: 88%\n\nSkills: Pod management, networking\nClusters managed: 20+",
+            
+            // Content sections
+            blog: "BLOG_POSTS.log streaming...\n\n[2024] Understanding System Design\n[2024] Database Optimization Techniques\n[2024] Modern JavaScript Patterns\n[2023] Building Scalable APIs\n\nTotal Posts: 47\nTotal Views: 25,847\nStatus: REGULARLY_UPDATED",
+            skills: "SKILLS.matrix loaded...\n\nProgramming: JavaScript, Python, Java\nFrameworks: React, Node.js, Spring\nDatabases: PostgreSQL, MongoDB\nCloud: AWS, GCP, Azure\nDevOps: Docker, Kubernetes, CI/CD\n\nLevel: ADVANCED\nYears: 5+ experience"
+        };
+
+        // 3D Graph variables
+        let scene, camera, renderer, graph3D, nodeObjects = [], linkObjects = [];
+        let rotationSpeed = 0.002;
+        let selectedCategory = null;
+        
+        // Initialize the 3D graph
+        function initGraph() {
+            const container = document.getElementById('graph');
+            const width = 400;
+            const height = 500;
+            
+            // Scene setup
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(width, height);
+            renderer.setClearColor(0x000000, 0);
+            container.appendChild(renderer.domElement);
+            
+            // Create 3D graph group
+            graph3D = new THREE.Group();
+            scene.add(graph3D);
+            
+            // Category colors
+            const categoryColors = {
+                core: 0xffffff,
+                project: 0x00d4ff,
+                work: 0xff6b35,
+                cert: 0x4ecdc4,
+                content: 0xffe66d
+            };
+            
+            // Convert 2D positions to 3D
+            const nodes3D = graphData.nodes.map(node => ({
+                ...node,
+                x: (node.x - 200) * 0.01, // Scale and center
+                y: (250 - node.y) * 0.01, // Flip Y and center
+                z: (Math.random() - 0.5) * 2 // Random Z depth
+            }));
+            
+            // Create node spheres
+            nodes3D.forEach((node, index) => {
+                const geometry = new THREE.SphereGeometry(0.15, 16, 16);
+                const material = new THREE.MeshBasicMaterial({ 
+                    color: categoryColors[node.category] || 0x00d4ff,
+                    transparent: true,
+                    opacity: 0.8
+                });
+                const sphere = new THREE.Mesh(geometry, material);
+                sphere.position.set(node.x, node.y, node.z);
+                sphere.userData = node;
+                
+                // Add glow effect
+                const glowGeometry = new THREE.SphereGeometry(0.2, 16, 16);
+                const glowMaterial = new THREE.MeshBasicMaterial({
+                    color: categoryColors[node.category] || 0x00d4ff,
+                    transparent: true,
+                    opacity: 0.3
+                });
+                const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+                glow.position.copy(sphere.position);
+                
+                graph3D.add(sphere);
+                graph3D.add(glow);
+                nodeObjects.push({ sphere, glow, node });
+            });
+            
+            // Create links
+            graphData.links.forEach(link => {
+                const sourceNode = nodes3D.find(n => n.id === link.source);
+                const targetNode = nodes3D.find(n => n.id === link.target);
+                
+                if (sourceNode && targetNode) {
+                    const points = [
+                        new THREE.Vector3(sourceNode.x, sourceNode.y, sourceNode.z),
+                        new THREE.Vector3(targetNode.x, targetNode.y, targetNode.z)
+                    ];
+                    
+                    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+                    const material = new THREE.LineBasicMaterial({ 
+                        color: 0x00d4ff, 
+                        transparent: true, 
+                        opacity: 0.4 
+                    });
+                    const line = new THREE.Line(geometry, material);
+                    line.userData = { source: link.source, target: link.target };
+                    
+                    graph3D.add(line);
+                    linkObjects.push(line);
+                }
+            });
+            
+            // Position camera
+            camera.position.set(0, 0, 5);
+            camera.lookAt(0, 0, 0);
+            
+            // Add mouse interaction
+            addGraphInteraction();
+            
+            // Start animation loop
+            animate3D();
+            
+            return { nodeObjects, linkObjects };
+        }
+
+        // Menu functionality
+        function initMenu() {
+            const menuItems = document.querySelectorAll('.menu-item[data-section]');
+            
+            menuItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const section = item.dataset.section;
+                    const category = item.dataset.category;
+                    selectSection(section, category);
+                });
+            });
+        }
+
+        // 3D Animation loop
+        function animate3D() {
+            requestAnimationFrame(animate3D);
+            
+            // Slow rotation
+            if (graph3D) {
+                graph3D.rotation.y += rotationSpeed;
+                graph3D.rotation.x += rotationSpeed * 0.5;
+            }
+            
+            renderer.render(scene, camera);
+        }
+        
+        // Mouse interaction for 3D graph
+        function addGraphInteraction() {
+            const raycaster = new THREE.Raycaster();
+            const mouse = new THREE.Vector2();
+            
+            renderer.domElement.addEventListener('click', onGraphClick);
+            renderer.domElement.addEventListener('mousemove', onGraphMouseMove);
+            
+            function onGraphClick(event) {
+                const rect = renderer.domElement.getBoundingClientRect();
+                mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+                mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+                
+                raycaster.setFromCamera(mouse, camera);
+                const spheres = nodeObjects.map(obj => obj.sphere);
+                const intersects = raycaster.intersectObjects(spheres);
+                
+                if (intersects.length > 0) {
+                    const clickedNode = intersects[0].object.userData;
+                    selectSection(clickedNode.id, clickedNode.category);
+                }
+            }
+            
+            function onGraphMouseMove(event) {
+                const rect = renderer.domElement.getBoundingClientRect();
+                mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+                mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+                
+                raycaster.setFromCamera(mouse, camera);
+                const spheres = nodeObjects.map(obj => obj.sphere);
+                const intersects = raycaster.intersectObjects(spheres);
+                
+                // Reset all node scales
+                nodeObjects.forEach(obj => {
+                    obj.sphere.scale.set(1, 1, 1);
+                    obj.glow.scale.set(1, 1, 1);
+                });
+                
+                // Scale up hovered node
+                if (intersects.length > 0) {
+                    const hoveredObj = nodeObjects.find(obj => obj.sphere === intersects[0].object);
+                    if (hoveredObj) {
+                        hoveredObj.sphere.scale.set(1.2, 1.2, 1.2);
+                        hoveredObj.glow.scale.set(1.3, 1.3, 1.3);
+                    }
+                    renderer.domElement.style.cursor = 'pointer';
+                } else {
+                    renderer.domElement.style.cursor = 'default';
+                }
+            }
+        }
+
+        // Section selection with 3D category highlighting
+        function selectSection(sectionId, category) {
+            selectedCategory = category;
+            
+            // Update menu
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`[data-section="${sectionId}"]`).classList.add('active');
+
+            // Reset all nodes and links
+            nodeObjects.forEach(obj => {
+                obj.sphere.material.opacity = 0.4;
+                obj.glow.material.opacity = 0.1;
+                obj.sphere.scale.set(1, 1, 1);
+            });
+            
+            linkObjects.forEach(link => {
+                link.material.opacity = 0.2;
+            });
+            
+            // Highlight nodes in the same category
+            nodeObjects.forEach(obj => {
+                if (obj.node.category === category) {
+                    obj.sphere.material.opacity = 1.0;
+                    obj.glow.material.opacity = 0.5;
+                }
+                
+                // Make specific node more prominent if it exists
+                if (obj.node.id === sectionId) {
+                    obj.sphere.material.opacity = 1.0;
+                    obj.glow.material.opacity = 0.8;
+                    obj.sphere.scale.set(1.3, 1.3, 1.3);
+                }
+            });
+            
+            // Highlight connected links
+            linkObjects.forEach(link => {
+                if (link.userData.source === sectionId || link.userData.target === sectionId) {
+                    link.material.opacity = 0.8;
+                } else if (nodeObjects.find(obj => obj.node.id === link.userData.source && obj.node.category === category) ||
+                          nodeObjects.find(obj => obj.node.id === link.userData.target && obj.node.category === category)) {
+                    link.material.opacity = 0.5;
+                }
+            });
+            
+            // Show content
+            if (sectionContent[sectionId]) {
+                showContent(sectionContent[sectionId]);
+            } else {
+                showCategorySummary(category, sectionId);
+            }
+        }
+
+        // Content display
+        function showContent(content) {
+            const display = document.getElementById('content-display');
+            const textEl = document.getElementById('content-text');
+            
+            display.classList.add('active');
+            
+            // Typewriter effect
+            textEl.innerHTML = '';
+            let i = 0;
+            const typeWriter = () => {
+                if (i < content.length) {
+                    textEl.innerHTML += content.charAt(i);
+                    i++;
+                    setTimeout(typeWriter, 30);
+                } else {
+                    textEl.innerHTML += '<span class="cursor">_</span>';
+                }
+            };
+            typeWriter();
+        }
+
+        // 3D Graph animations
+        function animateGraph() {
+            // Temporarily increase rotation speed
+            const originalSpeed = rotationSpeed;
+            rotationSpeed = 0.02;
+            
+            // Reset after 3 seconds
+            setTimeout(() => {
+                rotationSpeed = originalSpeed;
+            }, 3000);
+        }
+
+        // System status updates
+        function updateSystemStatus() {
+            const cpu = Math.floor(Math.random() * 40) + 40;
+            const mem = Math.floor(Math.random() * 60) + 20;
+            
+            document.getElementById('cpu-usage').textContent = 
+                '█'.repeat(Math.floor(cpu/10)) + '░'.repeat(10 - Math.floor(cpu/10)) + ` ${cpu}%`;
+            
+            document.getElementById('mem-usage').textContent = 
+                '█'.repeat(Math.floor(mem/10)) + '░'.repeat(10 - Math.floor(mem/10)) + ` ${mem}%`;
+        }
+
+        // Clock
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('en-US', { 
+                hour12: false,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('current-time').textContent = timeStr;
+        }
+
+        // 3D Graph utility functions
+        function resetGraphHighlight() {
+            nodeObjects.forEach(obj => {
+                obj.sphere.material.opacity = 0.8;
+                obj.glow.material.opacity = 0.3;
+                obj.sphere.scale.set(1, 1, 1);
+            });
+            
+            linkObjects.forEach(link => {
+                link.material.opacity = 0.4;
+            });
+        }
+
+        // Show category summary for grouped sections
+        function showCategorySummary(category, sectionId) {
+            const categorySummaries = {
+                project: "PROJECTS.directory accessed...\n\nActive Projects: 3\n> PROJECT_A: Full-Stack Web App [DEPLOYED]\n> PROJECT_B: Mobile Application [PUBLISHED]\n> PROJECT_C: AI/ML Pipeline [PRODUCTION]\n\nTotal commits: 2,847\nRepositories: 15\nLanguages: JavaScript, Python, Java\n\nClick individual project nodes for details.",
+                work: "WORK_EXPERIENCE.log loaded...\n\nTotal Experience: 5+ years\n> COMPANY_A: Software Engineer (2022-2024)\n> COMPANY_B: Full-Stack Developer (2020-2022)\n> COMPANY_C: Junior Developer (2019-2020)\n\nTechnologies: 20+ frameworks\nTeam leadership: 3 projects\nPerformance improvements: 40%+ average\n\nClick company nodes for details.",
+                cert: "CERTIFICATIONS.vault accessed...\n\nActive Certifications: 3\n> AWS Solutions Architect Associate\n> Google Cloud Professional\n> Kubernetes Administrator\n\nTotal study hours: 500+\nPassing rate: 92% average\nValid through: 2025-2026\n\nClick individual certs for details.",
+                content: "CONTENT.stream active...\n\n> BLOG: 47 posts, 25K+ views\n> SKILLS: Advanced level, 5+ years\n\nBlog topics: System Design, DevOps, Web Dev\nCore skills: JavaScript, Python, Cloud\nLearning: Always exploring new tech\n\nClick nodes for detailed breakdowns."
+            };
+            
+            const content = categorySummaries[category] || sectionContent[sectionId] || `${sectionId.toUpperCase()}.exe loaded...\n\nContent loading...\n\nSTATUS: READY\nMODE: INTERACTIVE`;
+            showContent(content);
+        }
+
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', () => {
+            initGraph();
+            initMenu();
+            selectSection('about', 'core');
+            updateClock();
+            setInterval(updateClock, 1000);
+            setInterval(updateSystemStatus, 5000);
+        });
+    </script>
+</body>
+</html>
