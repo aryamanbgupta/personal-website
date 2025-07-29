@@ -255,6 +255,161 @@
             opacity: 1;
         }
 
+        .page-container {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            padding: 20px;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .page-container.active {
+            display: block;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #00d4ff;
+            padding-bottom: 15px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            color: #00d4ff;
+            text-shadow: 0 0 15px #00d4ff;
+            letter-spacing: 3px;
+        }
+
+        .back-button {
+            background: transparent;
+            border: 2px solid #00d4ff;
+            color: #00d4ff;
+            padding: 8px 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: #00d4ff;
+            color: #000;
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background: rgba(0, 212, 255, 0.05);
+            border: 2px solid #00d4ff;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.1);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 25px rgba(0, 212, 255, 0.3);
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .card-title {
+            color: #00d4ff;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 0 0 8px #00d4ff;
+        }
+
+        .card-meta {
+            color: #ffffff;
+            font-size: 12px;
+            margin-bottom: 15px;
+            opacity: 0.8;
+        }
+
+        .card-description {
+            color: #ffffff;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .card-tech {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tech-tag {
+            background: rgba(0, 212, 255, 0.2);
+            border: 1px solid #00d4ff;
+            color: #00d4ff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .page-content {
+            color: #ffffff;
+            line-height: 1.8;
+            font-size: 14px;
+        }
+
+        .page-content h3 {
+            color: #00d4ff;
+            margin: 20px 0 10px 0;
+            font-size: 16px;
+        }
+
+        .page-content ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .page-content li {
+            margin-bottom: 5px;
+        }
+
+        .scrollable-content {
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .scrollable-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .scrollable-content::-webkit-scrollbar-track {
+            background: rgba(0, 212, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .scrollable-content::-webkit-scrollbar-thumb {
+            background: #00d4ff;
+            border-radius: 4px;
+        }
+
+        .scrollable-content::-webkit-scrollbar-thumb:hover {
+            background: #0099cc;
+        }
+
         .graph-3d-container {
             position: relative;
             width: 100%;
@@ -363,6 +518,475 @@
         <div class="content-display" id="content-display">
             <div id="content-text">
                 Welcome to the system. Select a node from the menu or graph to explore.<span class="cursor">_</span>
+            </div>
+        </div>
+        
+        <!-- Projects Page -->
+        <div class="page-container" id="projects-page">
+            <div class="page-header">
+                <div class="page-title">PROJECTS.DIR</div>
+                <button class="back-button" onclick="goBack()">&lt; BACK_TO_MAIN</button>
+            </div>
+            <div class="scrollable-content">
+                <div class="cards-container">
+                    <div class="card">
+                        <div class="card-title">Neural Network Dashboard</div>
+                        <div class="card-meta">Status: PRODUCTION | Users: 2,500+ | Updated: 2024</div>
+                        <div class="card-description">
+                            Real-time machine learning model monitoring system with interactive visualizations. 
+                            Features automated anomaly detection, performance metrics tracking, and deployment pipeline integration.
+                        </div>
+                        <div class="card-tech">
+                            <span class="tech-tag">React</span>
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">TensorFlow</span>
+                            <span class="tech-tag">Docker</span>
+                            <span class="tech-tag">AWS</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-title">E-Commerce Platform</div>
+                        <div class="card-meta">Status: DEPLOYED | Revenue: $50K+ | Updated: 2024</div>
+                        <div class="card-description">
+                            Full-stack e-commerce solution with microservices architecture. Includes payment processing, 
+                            inventory management, user authentication, and admin dashboard with real-time analytics.
+                        </div>
+                        <div class="card-tech">
+                            <span class="tech-tag">Node.js</span>
+                            <span class="tech-tag">MongoDB</span>
+                            <span class="tech-tag">Stripe API</span>
+                            <span class="tech-tag">Redis</span>
+                            <span class="tech-tag">Kubernetes</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-title">Mobile Fitness Tracker</div>
+                        <div class="card-meta">Status: PUBLISHED | Downloads: 15K+ | Rating: 4.8/5</div>
+                        <div class="card-description">
+                            Cross-platform mobile application for fitness tracking and social features. 
+                            Integrates with wearable devices, provides workout plans, and includes social challenges.
+                        </div>
+                        <div class="card-tech">
+                            <span class="tech-tag">React Native</span>
+                            <span class="tech-tag">Firebase</span>
+                            <span class="tech-tag">GraphQL</span>
+                            <span class="tech-tag">Redux</span>
+                            <span class="tech-tag">Expo</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-title">Blockchain Voting System</div>
+                        <div class="card-meta">Status: BETA | Security Audited | Updated: 2024</div>
+                        <div class="card-description">
+                            Decentralized voting platform built on Ethereum blockchain ensuring transparency and immutability. 
+                            Features smart contracts, voter verification, and real-time result tracking.
+                        </div>
+                        <div class="card-tech">
+                            <span class="tech-tag">Solidity</span>
+                            <span class="tech-tag">Web3.js</span>
+                            <span class="tech-tag">Ethereum</span>
+                            <span class="tech-tag">IPFS</span>
+                            <span class="tech-tag">MetaMask</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-title">IoT Smart Home Hub</div>
+                        <div class="card-meta">Status: PROTOTYPE | Devices: 25+ | Updated: 2023</div>
+                        <div class="card-description">
+                            Centralized control system for smart home devices with voice control and automation rules. 
+                            Supports multiple protocols and provides energy usage analytics.
+                        </div>
+                        <div class="card-tech">
+                            <span class="tech-tag">Raspberry Pi</span>
+                            <span class="tech-tag">MQTT</span>
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">InfluxDB</span>
+                            <span class="tech-tag">Grafana</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-title">Cloud Infrastructure Monitor</div>
+                        <div class="card-meta">Status: ENTERPRISE | Clients: 50+ | Updated: 2024</div>
+                        <div class="card-description">
+                            Multi-cloud monitoring solution with predictive analytics and cost optimization. 
+                            Provides real-time alerts, performance insights, and automated scaling recommendations.
+                        </div>
+                        <div class="card-tech">
+                            <span class="tech-tag">Go</span>
+                            <span class="tech-tag">Prometheus</span>
+                            <span class="tech-tag">Terraform</span>
+                            <span class="tech-tag">AWS</span>
+                            <span class="tech-tag">GCP</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- About Page -->
+        <div class="page-container" id="about-page">
+            <div class="page-header">
+                <div class="page-title">ABOUT_ME.EXE</div>
+                <button class="back-button" onclick="goBack()">&lt; BACK_TO_MAIN</button>
+            </div>
+            <div class="scrollable-content">
+                <div class="page-content">
+                    <h3>System Information</h3>
+                    <p>Passionate full-stack developer and system architect with 5+ years of experience building scalable applications and distributed systems. Specialized in modern web technologies, cloud infrastructure, and emerging tech like blockchain and IoT.</p>
+                    
+                    <h3>Core Expertise</h3>
+                    <ul>
+                        <li>Full-Stack Web Development (React, Node.js, Python)</li>
+                        <li>Cloud Architecture & DevOps (AWS, Docker, Kubernetes)</li>
+                        <li>Mobile Application Development (React Native, Flutter)</li>
+                        <li>Machine Learning & Data Analytics (TensorFlow, PyTorch)</li>
+                        <li>Blockchain Development (Solidity, Web3)</li>
+                        <li>IoT & Embedded Systems</li>
+                    </ul>
+                    
+                    <h3>Philosophy</h3>
+                    <p>I believe in writing clean, maintainable code and building systems that can scale. Always learning, always experimenting with new technologies. I enjoy solving complex problems and turning ideas into reality through code.</p>
+                    
+                    <h3>Current Focus</h3>
+                    <p>Currently exploring edge computing, serverless architectures, and advanced machine learning applications. Passionate about creating solutions that have real-world impact.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Blog Page -->
+        <div class="page-container" id="blog-page">
+            <div class="page-header">
+                <div class="page-title">BLOG.LOG</div>
+                <button class="back-button" onclick="goBack()">&lt; BACK_TO_MAIN</button>
+            </div>
+            <div class="scrollable-content">
+                <div class="cards-container">
+                    <div class="card">
+                        <div class="card-title">Understanding Microservices Architecture</div>
+                        <div class="card-meta">Published: Dec 2024 | Views: 1,247 | Reading Time: 8 min</div>
+                        <div class="card-description">
+                            Deep dive into microservices patterns, service discovery, and distributed system challenges. 
+                            Includes practical examples and lessons learned from production deployments.
+                        </div>
+                        <div class="card-tech">
+                            <span class="tech-tag">Architecture</span>
+                            <span class="tech-tag">Docker</span>
+                            <span class="tech-tag">Kubernetes</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-title">Building Scalable APIs with GraphQL</div>
+                        <div class="card-meta">Published: Nov 2024 | Views: 892 | Reading Time: 6 min</div>
+                        <div class="card-description">
+                            Complete guide to implementing GraphQL APIs with performance optimization, caching strategies, 
+                            and security best practices for production environments.
+                        </div>
+                        <div class="card-tech">
+                            <span class="tech-tag">GraphQL</span>
+                            <span class="tech-tag">Node.js</span>
+                            <span class="tech-tag">Performance</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-title">Modern Frontend State Management</div>
+                        <div class="card-meta">Published: Oct 2024 | Views: 1,563 | Reading Time: 10 min</div>
+                        <div class="card-description">
+                            Comparison of state management solutions in React applications. Covers Redux, Zustand, Jotai, 
+                            and context-based approaches with real-world use cases.
+                        </div>
+                        <div class="card-tech">
+                            <span class="tech-tag">React</span>
+                            <span class="tech-tag">Redux</span>
+                            <span class="tech-tag">State Management</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-title">DevOps Pipeline Optimization</div>
+                        <div class="card-meta">Published: Sep 2024 | Views: 734 | Reading Time: 12 min</div>
+                        <div class="card-description">
+                            Strategies for optimizing CI/CD pipelines, reducing build times, and implementing effective 
+                            testing strategies across different environments and deployment targets.
+                        </div>
+                        <div class="card-tech">
+                            <span class="tech-tag">CI/CD</span>
+                            <span class="tech-tag">AWS</span>
+                            <span class="tech-tag">Testing</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Contact Page -->
+        <div class="page-container" id="contact-page">
+            <div class="page-header">
+                <div class="page-title">CONTACT.INIT</div>
+                <button class="back-button" onclick="goBack()">&lt; BACK_TO_MAIN</button>
+            </div>
+            <div class="scrollable-content">
+                <div class="page-content">
+                    <h3>Communication Protocols</h3>
+                    <div class="cards-container" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+                        <div class="card">
+                            <div class="card-title">Email</div>
+                            <div class="card-description">
+                                your.email@domain.com<br>
+                                Response time: &lt; 24 hours<br>
+                                Status: ACTIVE
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-title">LinkedIn</div>
+                            <div class="card-description">
+                                /in/your-profile<br>
+                                Professional inquiries<br>
+                                Status: MONITORING
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-title">GitHub</div>
+                            <div class="card-description">
+                                @your-username<br>
+                                Code collaborations<br>
+                                Status: ACTIVE
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-title">Twitter</div>
+                            <div class="card-description">
+                                @your-handle<br>
+                                Tech discussions<br>
+                                Status: OCCASIONAL
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3>Availability</h3>
+                    <p>Currently open to freelance projects, consulting opportunities, and interesting collaborations. 
+                    Particularly interested in projects involving:</p>
+                    <ul>
+                        <li>Full-stack web application development</li>
+                        <li>Cloud infrastructure and DevOps consulting</li>
+                        <li>Mobile application development</li>
+                        <li>Blockchain and Web3 projects</li>
+                        <li>Technical architecture and system design</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Work Experience Page -->
+        <div class="page-container" id="work-page">
+            <div class="page-header">
+                <div class="page-title">WORK_EXPERIENCE.LOG</div>
+                <button class="back-button" onclick="goBack()">&lt; BACK_TO_MAIN</button>
+            </div>
+            <div class="scrollable-content">
+                <div class="cards-container">
+                    <div class="card">
+                        <div class="card-title">Senior Software Engineer - TechCorp</div>
+                        <div class="card-meta">2022 - Present | Full-time | Remote</div>
+                        <div class="card-description">
+                            Lead development of microservices architecture serving 1M+ users. Reduced system latency by 40% 
+                            and improved deployment frequency by 300%. Mentored junior developers and established coding standards.
+                        </div>
+                        <div class="card-tech">
+                            <span class="tech-tag">Java</span>
+                            <span class="tech-tag">Spring Boot</span>
+                            <span class="tech-tag">Kubernetes</span>
+                            <span class="tech-tag">AWS</span>
+                            <span class="tech-tag">PostgreSQL</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-title">Full-Stack Developer - StartupXYZ</div>
+                        <div class="card-meta">2020 - 2022 | Full-time | Hybrid</div>
+                        <div class="card-description">
+                            Built the entire frontend and backend infrastructure from scratch. Implemented real-time features, 
+                            payment processing, and analytics dashboard. Grew platform from 0 to 10K active users.
+                        </div>
+                        <div class="card-tech">
+                            <span class="tech-tag">React</span>
+                            <span class="tech-tag">Node.js</span>
+                            <span class="tech-tag">MongoDB</span>
+                            <span class="tech-tag">Stripe</span>
+                            <span class="tech-tag">Socket.io</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-title">Software Developer - Enterprise Solutions</div>
+                        <div class="card-meta">2019 - 2020 | Full-time | On-site</div>
+                        <div class="card-description">
+                            Maintained and modernized legacy systems for enterprise clients. Migrated monolithic applications 
+                            to containerized microservices. Improved system performance and reduced maintenance costs.
+                        </div>
+                        <div class="card-tech">
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">Django</span>
+                            <span class="tech-tag">Docker</span>
+                            <span class="tech-tag">MySQL</span>
+                            <span class="tech-tag">Redis</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Certifications Page -->
+        <div class="page-container" id="certifications-page">
+            <div class="page-header">
+                <div class="page-title">CERTIFICATIONS.VAULT</div>
+                <button class="back-button" onclick="goBack()">&lt; BACK_TO_MAIN</button>
+            </div>
+            <div class="scrollable-content">
+                <div class="cards-container">
+                    <div class="card">
+                        <div class="card-title">AWS Solutions Architect Professional</div>
+                        <div class="card-meta">Issued: 2024 | Valid until: 2027 | Score: 890/1000</div>
+                        <div class="card-description">
+                            Advanced certification covering complex architectural patterns, disaster recovery, 
+                            cost optimization, and enterprise-scale deployments on AWS cloud platform.
+                        </div>
+                        <div class="card-tech">
+                            <span class="tech-tag">AWS</span>
+                            <span class="tech-tag">Architecture</span>
+                            <span class="tech-tag">Cloud</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-title">Google Cloud Professional Cloud Architect</div>
+                        <div class="card-meta">Issued: 2023 | Valid until: 2025 | Score: 92%</div>
+                        <div class="card-description">
+                            Professional-level certification for designing and implementing GCP solutions, 
+                            managing cloud architecture, and ensuring security and compliance.
+                        </div>
+                        <div class="card-tech">
+                            <span class="tech-tag">GCP</span>
+                            <span class="tech-tag">Architecture</span>
+                            <span class="tech-tag">Cloud</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-title">Kubernetes Administrator (CKA)</div>
+                        <div class="card-meta">Issued: 2023 | Valid until: 2026 | Score: 88%</div>
+                        <div class="card-description">
+                            Hands-on certification for Kubernetes cluster administration, including installation, 
+                            configuration, troubleshooting, and managing containerized applications.
+                        </div>
+                        <div class="card-tech">
+                            <span class="tech-tag">Kubernetes</span>
+                            <span class="tech-tag">DevOps</span>
+                            <span class="tech-tag">Containers</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-title">MongoDB Certified Developer</div>
+                        <div class="card-meta">Issued: 2022 | Valid until: 2025 | Score: 94%</div>
+                        <div class="card-description">
+                            Certification covering MongoDB application development, data modeling, 
+                            indexing strategies, and performance optimization techniques.
+                        </div>
+                        <div class="card-tech">
+                            <span class="tech-tag">MongoDB</span>
+                            <span class="tech-tag">Database</span>
+                            <span class="tech-tag">NoSQL</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Skills Page -->
+        <div class="page-container" id="skills-page">
+            <div class="page-header">
+                <div class="page-title">SKILLS.MATRIX</div>
+                <button class="back-button" onclick="goBack()">&lt; BACK_TO_MAIN</button>
+            </div>
+            <div class="scrollable-content">
+                <div class="page-content">
+                    <h3>Programming Languages</h3>
+                    <div class="cards-container" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                        <div class="card">
+                            <div class="card-title">JavaScript/TypeScript</div>
+                            <div class="card-meta">Expert | 5+ years</div>
+                            <div class="card-description">ES6+, Node.js, React, Vue.js, Angular</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">Python</div>
+                            <div class="card-meta">Expert | 4+ years</div>
+                            <div class="card-description">Django, FastAPI, Data Analysis, ML</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">Java</div>
+                            <div class="card-meta">Advanced | 3+ years</div>
+                            <div class="card-description">Spring Boot, Microservices, Enterprise</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">Go</div>
+                            <div class="card-meta">Intermediate | 2+ years</div>
+                            <div class="card-description">APIs, CLI tools, Concurrent programming</div>
+                        </div>
+                    </div>
+                    
+                    <h3>Cloud & DevOps</h3>
+                    <div class="cards-container" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                        <div class="card">
+                            <div class="card-title">AWS</div>
+                            <div class="card-meta">Expert | Certified</div>
+                            <div class="card-description">EC2, Lambda, RDS, S3, CloudFormation</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">Docker/Kubernetes</div>
+                            <div class="card-meta">Advanced | Certified</div>
+                            <div class="card-description">Container orchestration, Helm, operators</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">CI/CD</div>
+                            <div class="card-meta">Advanced | 4+ years</div>
+                            <div class="card-description">Jenkins, GitHub Actions, GitLab CI</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">Terraform</div>
+                            <div class="card-meta">Intermediate | 2+ years</div>
+                            <div class="card-description">Infrastructure as Code, Multi-cloud</div>
+                        </div>
+                    </div>
+                    
+                    <h3>Databases</h3>
+                    <div class="cards-container" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                        <div class="card">
+                            <div class="card-title">PostgreSQL</div>
+                            <div class="card-meta">Expert | 5+ years</div>
+                            <div class="card-description">Performance tuning, Complex queries</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">MongoDB</div>
+                            <div class="card-meta">Advanced | Certified</div>
+                            <div class="card-description">Aggregation, Indexing, Sharding</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">Redis</div>
+                            <div class="card-meta">Intermediate | 3+ years</div>
+                            <div class="card-description">Caching, Pub/Sub, Data structures</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -564,12 +1188,68 @@
             const menuItems = document.querySelectorAll('.menu-item[data-section]');
             
             menuItems.forEach(item => {
+                // Click event
                 item.addEventListener('click', () => {
                     const section = item.dataset.section;
                     const category = item.dataset.category;
-                    selectSection(section, category);
+                    
+                    // Check if there's a dedicated page for this section
+                    const pageId = section + '-page';
+                    const pageElement = document.getElementById(pageId);
+                    
+                    if (pageElement) {
+                        navigateToPage(pageId);
+                    } else {
+                        selectSection(section, category);
+                    }
+                });
+                
+                // Hover events
+                item.addEventListener('mouseenter', () => {
+                    const section = item.dataset.section;
+                    const category = item.dataset.category;
+                    highlightGraphNodes(section, category);
+                });
+                
+                item.addEventListener('mouseleave', () => {
+                    resetGraphHighlight();
                 });
             });
+        }
+        
+        // Navigation functions
+        function navigateToPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page-container').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Hide main terminal content
+            document.querySelector('.terminal-content').style.display = 'none';
+            document.querySelector('.content-display').style.display = 'none';
+            
+            // Show selected page
+            document.getElementById(pageId).classList.add('active');
+        }
+        
+        function goBack() {
+            // Hide all pages
+            document.querySelectorAll('.page-container').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Show main terminal content
+            document.querySelector('.terminal-content').style.display = 'grid';
+            document.querySelector('.content-display').style.display = 'block';
+            
+            // Reset menu selection
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector('[data-section="about"]').classList.add('active');
+            
+            // Reset graph highlighting
+            resetGraphHighlight();
         }
 
         // 3D Animation loop
@@ -604,6 +1284,7 @@
                 
                 if (intersects.length > 0) {
                     const clickedNode = intersects[0].object.userData;
+                    // Graph clicks only show content in bottom panel, no navigation to pages
                     selectSection(clickedNode.id, clickedNode.category);
                 }
             }
@@ -759,6 +1440,55 @@
             
             linkObjects.forEach(link => {
                 link.material.opacity = 0.4;
+            });
+        }
+        
+        // Highlight graph nodes based on menu hover
+        function highlightGraphNodes(sectionId, category) {
+            // Reset all nodes first
+            nodeObjects.forEach(obj => {
+                obj.sphere.material.opacity = 0.3;
+                obj.glow.material.opacity = 0.1;
+                obj.sphere.scale.set(1, 1, 1);
+            });
+            
+            linkObjects.forEach(link => {
+                link.material.opacity = 0.2;
+            });
+            
+            // Highlight nodes in the same category
+            nodeObjects.forEach(obj => {
+                if (obj.node.category === category) {
+                    obj.sphere.material.opacity = 1.0;
+                    obj.glow.material.opacity = 0.6;
+                    obj.sphere.scale.set(1.1, 1.1, 1.1);
+                }
+                
+                // Make specific node extra prominent if it exists
+                if (obj.node.id === sectionId) {
+                    obj.sphere.material.opacity = 1.0;
+                    obj.glow.material.opacity = 0.9;
+                    obj.sphere.scale.set(1.4, 1.4, 1.4);
+                    
+                    // Add pulsing glow effect
+                    const pulseScale = 1.4 + Math.sin(Date.now() * 0.005) * 0.1;
+                    obj.glow.scale.set(pulseScale, pulseScale, pulseScale);
+                }
+            });
+            
+            // Highlight connected links
+            linkObjects.forEach(link => {
+                const sourceNode = nodeObjects.find(obj => obj.node.id === link.userData.source);
+                const targetNode = nodeObjects.find(obj => obj.node.id === link.userData.target);
+                
+                if ((sourceNode && sourceNode.node.category === category) || 
+                    (targetNode && targetNode.node.category === category)) {
+                    link.material.opacity = 0.6;
+                }
+                
+                if (link.userData.source === sectionId || link.userData.target === sectionId) {
+                    link.material.opacity = 0.9;
+                }
             });
         }
 
