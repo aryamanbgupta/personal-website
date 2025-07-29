@@ -410,6 +410,96 @@
             background: #0099cc;
         }
 
+        /* Matrix Animation Styles */
+        .matrix-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 2000;
+            overflow: hidden;
+        }
+
+        .matrix-column {
+            position: absolute;
+            top: -100px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: #00d4ff;
+            text-shadow: 0 0 5px #00d4ff;
+            white-space: pre;
+            animation: matrixFall linear;
+            opacity: 0;
+        }
+
+        @keyframes matrixFall {
+            0% {
+                transform: translateY(-100px);
+                opacity: 1;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+        }
+
+        .dissolution-target {
+            transition: all 0.4s ease-out;
+        }
+
+        .dissolution-target.dissolving {
+            opacity: 0;
+            filter: blur(2px);
+            transform: scale(0.95);
+        }
+
+        /* Page animation states */
+        .page-container {
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.3s ease-out;
+        }
+
+        .page-container.active {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .page-container.entering {
+            animation: pageEnter 0.6s ease-out forwards;
+        }
+
+        @keyframes pageEnter {
+            0% {
+                transform: translateY(30px) scale(0.98);
+                opacity: 0;
+            }
+            50% {
+                transform: translateY(10px) scale(0.99);
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .page-title.typing {
+            overflow: hidden;
+            border-right: 2px solid #00d4ff;
+            animation: typewriter 0.8s steps(20) forwards, blink 1s infinite;
+        }
+
+        @keyframes typewriter {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
         .graph-3d-container {
             position: relative;
             width: 100%;
@@ -467,7 +557,7 @@
         </div>
         
         <div class="terminal-content">
-            <div class="left-panel">
+            <div class="left-panel dissolution-target">
                 <div class="menu-section">
                     <div class="menu-title">MAIN MENU</div>
                     <div class="menu-item active" data-section="about" data-category="core">> ABOUT_ME</div>
@@ -485,7 +575,7 @@
                 <div id="graph"></div>
             </div>
 
-            <div class="right-panel">
+            <div class="right-panel dissolution-target">
                 <div class="avatar-container">
                     <div class="avatar-frame">
                         <img src="avatar-image.png" alt="Avatar" class="avatar-image">
@@ -991,6 +1081,9 @@
         </div>
         
         <div class="scan-lines"></div>
+        
+        <!-- Matrix Animation Overlay -->
+        <div class="matrix-overlay" id="matrix-overlay"></div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -1217,25 +1310,186 @@
             });
         }
         
-        // Navigation functions
+        // Navigation functions with animation
         function navigateToPage(pageId) {
-            // Hide all pages
-            document.querySelectorAll('.page-container').forEach(page => {
-                page.classList.remove('active');
-            });
+            const section = pageId.replace('-page', '');
+            const targetNode = findGraphNode(section);
             
+            // Start the animation sequence
+            startTransitionAnimation(pageId, targetNode);
+        }
+        
+        // Animation sequence controller
+        async function startTransitionAnimation(pageId, targetNode) {
+            // Phase 1: Matrix dissolution
+            startMatrixEffect();
+            startDissolution();
+            
+            // Phase 2: Camera zoom (starts slightly after matrix begins)
+            setTimeout(() => {
+                if (targetNode) {
+                    animateCameraToNode(targetNode);
+                }
+            }, 200);
+            
+            // Phase 3: Page transition
+            setTimeout(() => {
+                showPageWithAnimation(pageId);
+            }, 700);
+            
+            // Cleanup
+            setTimeout(() => {
+                cleanupTransitionEffects();
+            }, 1200);
+        }
+        
+        // Find corresponding graph node
+        function findGraphNode(sectionId) {
+            return nodeObjects.find(obj => obj.node.id === sectionId);
+        }
+        
+        // Matrix effect functions
+        function startMatrixEffect() {
+            const overlay = document.getElementById('matrix-overlay');
+            overlay.innerHTML = '';
+            
+            const matrixChars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZアイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+            const columns = 40;
+            
+            for (let i = 0; i < columns; i++) {
+                createMatrixColumn(i, columns, matrixChars, overlay);
+            }
+        }
+        
+        function createMatrixColumn(index, totalColumns, chars, container) {
+            const column = document.createElement('div');
+            column.className = 'matrix-column';
+            column.style.left = `${(index / totalColumns) * 100}%`;
+            column.style.animationDuration = `${0.5 + Math.random() * 0.8}s`;
+            column.style.animationDelay = `${Math.random() * 0.3}s`;
+            
+            // Generate random characters
+            let text = '';
+            const length = 15 + Math.floor(Math.random() * 10);
+            for (let i = 0; i < length; i++) {
+                text += chars[Math.floor(Math.random() * chars.length)] + '\n';
+            }
+            column.textContent = text;
+            
+            container.appendChild(column);
+        }
+        
+        // Dissolution effect
+        function startDissolution() {
+            document.querySelectorAll('.dissolution-target').forEach(element => {
+                element.classList.add('dissolving');
+            });
+        }
+        
+        // Camera animation
+        function animateCameraToNode(nodeObj) {
+            if (!nodeObj || !camera) return;
+            
+            const targetPosition = nodeObj.sphere.position.clone();
+            const startPosition = camera.position.clone();
+            const startLookAt = new THREE.Vector3(0, 0, 0);
+            
+            // Calculate zoom position (closer to the node)
+            const direction = targetPosition.clone().normalize();
+            const zoomPosition = targetPosition.clone().add(direction.multiplyScalar(-0.8));
+            
+            const duration = 500; // 500ms
+            const startTime = Date.now();
+            
+            function animateCamera() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const easeProgress = 1 - Math.pow(1 - progress, 3); // Ease out cubic
+                
+                // Interpolate camera position
+                camera.position.lerpVectors(startPosition, zoomPosition, easeProgress);
+                camera.lookAt(targetPosition);
+                
+                // Scale up the target node
+                const scale = 1 + (easeProgress * 2);
+                nodeObj.sphere.scale.set(scale, scale, scale);
+                nodeObj.glow.scale.set(scale * 1.2, scale * 1.2, scale * 1.2);
+                nodeObj.glow.material.opacity = 0.3 + (easeProgress * 0.7);
+                
+                if (progress < 1) {
+                    requestAnimationFrame(animateCamera);
+                }
+            }
+            
+            animateCamera();
+        }
+        
+        // Page transition with animation
+        function showPageWithAnimation(pageId) {
             // Hide main terminal content
             document.querySelector('.terminal-content').style.display = 'none';
             document.querySelector('.content-display').style.display = 'none';
             
-            // Show selected page
-            document.getElementById(pageId).classList.add('active');
+            // Hide all pages first
+            document.querySelectorAll('.page-container').forEach(page => {
+                page.classList.remove('active', 'entering');
+            });
+            
+            // Show selected page with animation
+            const targetPage = document.getElementById(pageId);
+            targetPage.classList.add('active', 'entering');
+            
+            // Add typewriter effect to page title
+            setTimeout(() => {
+                const pageTitle = targetPage.querySelector('.page-title');
+                if (pageTitle) {
+                    pageTitle.classList.add('typing');
+                    // Remove typing class after animation
+                    setTimeout(() => {
+                        pageTitle.classList.remove('typing');
+                    }, 1000);
+                }
+            }, 100);
+        }
+        
+        // Cleanup transition effects
+        function cleanupTransitionEffects() {
+            // Clear matrix overlay
+            document.getElementById('matrix-overlay').innerHTML = '';
+            
+            // Remove dissolution classes
+            document.querySelectorAll('.dissolution-target').forEach(element => {
+                element.classList.remove('dissolving');
+            });
+            
+            // Reset camera and graph
+            resetCameraAndGraph();
+        }
+        
+        // Reset camera and graph to original state
+        function resetCameraAndGraph() {
+            if (camera) {
+                camera.position.set(0, 0, 5);
+                camera.lookAt(0, 0, 0);
+            }
+            
+            // Reset all node scales and opacity
+            nodeObjects.forEach(obj => {
+                obj.sphere.scale.set(1, 1, 1);
+                obj.glow.scale.set(1, 1, 1);
+                obj.sphere.material.opacity = 0.8;
+                obj.glow.material.opacity = 0.3;
+            });
+            
+            linkObjects.forEach(link => {
+                link.material.opacity = 0.4;
+            });
         }
         
         function goBack() {
             // Hide all pages
             document.querySelectorAll('.page-container').forEach(page => {
-                page.classList.remove('active');
+                page.classList.remove('active', 'entering');
             });
             
             // Show main terminal content
@@ -1248,7 +1502,8 @@
             });
             document.querySelector('[data-section="about"]').classList.add('active');
             
-            // Reset graph highlighting
+            // Reset all animation states
+            cleanupTransitionEffects();
             resetGraphHighlight();
         }
 
