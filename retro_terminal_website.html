@@ -421,6 +421,24 @@
             z-index: 2000;
             overflow: hidden;
         }
+        
+        /* White flash transition overlay */
+        .white-flash-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle, #ffffff 0%, #00d4ff 100%);
+            pointer-events: none;
+            z-index: 3000;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        
+        .white-flash-overlay.active {
+            opacity: 1;
+        }
 
         .matrix-column {
             position: absolute;
@@ -449,13 +467,60 @@
         }
 
         .dissolution-target {
-            transition: all 0.4s ease-out;
+            transition: all 0.6s ease-out;
+            position: relative;
         }
 
         .dissolution-target.dissolving {
             opacity: 0;
-            filter: blur(2px);
-            transform: scale(0.95);
+            filter: blur(3px);
+            transform: scale(0.9);
+        }
+
+        .code-dissolution-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: #00d4ff;
+            z-index: 10;
+            opacity: 0;
+            overflow: hidden;
+        }
+
+        .code-dissolution-overlay.active {
+            opacity: 1;
+            animation: codeDissolve 0.8s ease-out;
+        }
+
+        @keyframes codeDissolve {
+            0% {
+                opacity: 0;
+                transform: scale(1.1);
+            }
+            30% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+        }
+
+        .code-line {
+            white-space: pre;
+            margin: 2px 0;
+            animation: lineDissolve 0.1s ease-in;
+        }
+
+        @keyframes lineDissolve {
+            0% { opacity: 0; transform: translateX(-10px); }
+            100% { opacity: 1; transform: translateX(0); }
         }
 
         /* Page animation states */
@@ -1321,26 +1386,32 @@
         
         // Animation sequence controller
         async function startTransitionAnimation(pageId, targetNode) {
-            // Phase 1: Matrix dissolution
-            startMatrixEffect();
-            startDissolution();
+            // Phase 1: Code dissolution of menu and picture
+            startCodeDissolution();
             
-            // Phase 2: Camera zoom (starts slightly after matrix begins)
+            // Phase 2: Rotate graph to bring target node to front
+            setTimeout(() => {
+                if (targetNode) {
+                    rotateGraphToNode(targetNode);
+                }
+            }, 300);
+            
+            // Phase 3: Camera zoom to node
             setTimeout(() => {
                 if (targetNode) {
                     animateCameraToNode(targetNode);
                 }
-            }, 200);
+            }, 800);
             
-            // Phase 3: Page transition
+            // Phase 4: Page transition
             setTimeout(() => {
                 showPageWithAnimation(pageId);
-            }, 700);
+            }, 1400);
             
             // Cleanup
             setTimeout(() => {
                 cleanupTransitionEffects();
-            }, 1200);
+            }, 2000);
         }
         
         // Find corresponding graph node
@@ -1379,88 +1450,122 @@
             container.appendChild(column);
         }
         
-        // Dissolution effect
-        function startDissolution() {
+        // Code dissolution effect
+        function startCodeDissolution() {
             document.querySelectorAll('.dissolution-target').forEach(element => {
+                createCodeOverlay(element);
                 element.classList.add('dissolving');
             });
         }
         
-        // Camera animation
-        function animateCameraToNode(nodeObj) {
-            if (!nodeObj || !camera) return;
+        // Create code overlay for dissolution effect
+        function createCodeOverlay(element) {
+            const overlay = document.createElement('div');
+            overlay.className = 'code-dissolution-overlay';
             
-            const targetPosition = nodeObj.sphere.position.clone();
-            const startPosition = camera.position.clone();
-            const startLookAt = new THREE.Vector3(0, 0, 0);
+            const codeLines = [
+                'function dissolve() {',
+                '  const elements = document.querySelectorAll(".target");',
+                '  elements.forEach(el => {',
+                '    el.style.opacity = "0";',
+                '    el.style.transform = "scale(0.9)";',
+                '  });',
+                '}',
+                '',
+                '// Initiating dissolution...',
+                'dissolve();',
+                '// Memory freed: ' + Math.floor(Math.random() * 1000) + 'KB',
+                '// Status: TRANSITIONING',
+                '// Target: ' + (element.querySelector('.menu-title') ? 'MENU_SYSTEM' : 'AVATAR_DISPLAY'),
+                '// Protocol: MATRIX_SHIFT'
+            ];
             
-            // Calculate zoom position (closer to the node)
-            const direction = targetPosition.clone().normalize();
-            const zoomPosition = targetPosition.clone().add(direction.multiplyScalar(-0.8));
+            codeLines.forEach((line, index) => {
+                const lineEl = document.createElement('div');
+                lineEl.className = 'code-line';
+                lineEl.textContent = line;
+                lineEl.style.animationDelay = `${index * 50}ms`;
+                overlay.appendChild(lineEl);
+            });
             
-            const duration = 500; // 500ms
-            const startTime = Date.now();
+            element.style.position = 'relative';
+            element.appendChild(overlay);
             
-            function animateCamera() {
-                const elapsed = Date.now() - startTime;
-                const progress = Math.min(elapsed / duration, 1);
-                const easeProgress = 1 - Math.pow(1 - progress, 3); // Ease out cubic
-                
-                // Interpolate camera position
-                camera.position.lerpVectors(startPosition, zoomPosition, easeProgress);
-                camera.lookAt(targetPosition);
-                
-                // Scale up the target node
-                const scale = 1 + (easeProgress * 2);
-                nodeObj.sphere.scale.set(scale, scale, scale);
-                nodeObj.glow.scale.set(scale * 1.2, scale * 1.2, scale * 1.2);
-                nodeObj.glow.material.opacity = 0.3 + (easeProgress * 0.7);
-                
-                if (progress < 1) {
-                    requestAnimationFrame(animateCamera);
-                }
-            }
-            
-            animateCamera();
+            // Activate overlay after a short delay
+            setTimeout(() => {
+                overlay.classList.add('active');
+            }, 100);
         }
+        
         
         // Page transition with animation
         function showPageWithAnimation(pageId) {
-            // Hide main terminal content
-            document.querySelector('.terminal-content').style.display = 'none';
-            document.querySelector('.content-display').style.display = 'none';
+            // Create white flash overlay
+            const flashOverlay = document.createElement('div');
+            flashOverlay.className = 'white-flash-overlay';
+            document.body.appendChild(flashOverlay);
             
-            // Hide all pages first
-            document.querySelectorAll('.page-container').forEach(page => {
-                page.classList.remove('active', 'entering');
-            });
-            
-            // Show selected page with animation
-            const targetPage = document.getElementById(pageId);
-            targetPage.classList.add('active', 'entering');
-            
-            // Add typewriter effect to page title
+            // Trigger white flash
             setTimeout(() => {
-                const pageTitle = targetPage.querySelector('.page-title');
-                if (pageTitle) {
-                    pageTitle.classList.add('typing');
-                    // Remove typing class after animation
-                    setTimeout(() => {
-                        pageTitle.classList.remove('typing');
-                    }, 1000);
-                }
-            }, 100);
+                flashOverlay.classList.add('active');
+            }, 50);
+            
+            // Hide main terminal content during flash
+            setTimeout(() => {
+                document.querySelector('.terminal-content').style.display = 'none';
+                document.querySelector('.content-display').style.display = 'none';
+                
+                // Hide all pages first
+                document.querySelectorAll('.page-container').forEach(page => {
+                    page.classList.remove('active', 'entering');
+                });
+                
+                // Show selected page with animation
+                const targetPage = document.getElementById(pageId);
+                targetPage.classList.add('active', 'entering');
+                
+                // Fade out white flash
+                flashOverlay.classList.remove('active');
+                
+                // Remove flash overlay after transition
+                setTimeout(() => {
+                    if (flashOverlay.parentNode) {
+                        flashOverlay.parentNode.removeChild(flashOverlay);
+                    }
+                }, 500);
+                
+                // Add typewriter effect to page title
+                setTimeout(() => {
+                    const pageTitle = targetPage.querySelector('.page-title');
+                    if (pageTitle) {
+                        pageTitle.classList.add('typing');
+                        // Remove typing class after animation
+                        setTimeout(() => {
+                            pageTitle.classList.remove('typing');
+                        }, 1000);
+                    }
+                }, 200);
+            }, 300);
         }
         
         // Cleanup transition effects
         function cleanupTransitionEffects() {
             // Clear matrix overlay
-            document.getElementById('matrix-overlay').innerHTML = '';
+            const matrixOverlay = document.getElementById('matrix-overlay');
+            matrixOverlay.innerHTML = '';
+            matrixOverlay.classList.remove('active');
             
-            // Remove dissolution classes
+            // Remove dissolution classes and code overlays
             document.querySelectorAll('.dissolution-target').forEach(element => {
                 element.classList.remove('dissolving');
+                const overlay = element.querySelector('.code-dissolution-overlay');
+                if (overlay) {
+                    overlay.remove();
+                }
             });
+            
+            // Remove page dissolution
+            document.querySelector('.terminal-container').classList.remove('page-dissolve', 'dissolving');
             
             // Reset camera and graph
             resetCameraAndGraph();
