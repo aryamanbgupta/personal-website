@@ -134,7 +134,6 @@ Software Engineering, Machine Learning, Applied Algorithms & Data Structures, Lo
 ## Contact Information
 
 - **Email:** aryaman@bu.edu
-- **Phone:** 617-991-5272
 - **LinkedIn:** [linkedin.com/in/aryaman-bhavya-gupta](https://www.linkedin.com/in/aryaman-bhavya-gupta/)
 - **GitHub:** [github.com/aryamanbgupta](https://github.com/aryamanbgupta)
 
