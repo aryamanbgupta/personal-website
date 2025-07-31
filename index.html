@@ -3,35 +3,1947 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aryaman</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Terminal v2.1 - Personal System</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: #0a0a0a;
+            color: #00d4ff;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .terminal-container {
+            height: 100vh;
+            background: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 212, 255, 0.03) 2px,
+                    rgba(0, 212, 255, 0.03) 4px
+                ),
+                radial-gradient(ellipse at center, #0a0a0a 0%, #000000 100%);
+            border: 3px solid #00d4ff;
+            border-radius: 8px 8px 8px 8px;
+            position: relative;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+        }
+
+
+        .terminal-content {
+            display: grid;
+            grid-template-columns: 1fr 400px 1fr;
+            height: 100vh;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .menu-section {
+            margin-bottom: 30px;
+        }
+
+        .menu-title {
+            color: #00d4ff;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px #00d4ff;
+            letter-spacing: 2px;
+        }
+
+        .menu-item {
+            padding: 10px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            padding-left: 15px;
+            font-size: 16px;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            color: #ffffff;
+            border-left-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+            text-shadow: 0 0 5px #00d4ff;
+            transform: translateX(5px);
+        }
+
+        .graph-container {
+            position: relative;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            overflow: hidden;
+        }
+
+        .graph-title {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #00d4ff;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 10;
+            background: #0a0a0a;
+            padding: 5px 15px;
+            border: 1px solid #00d4ff;
+            border-radius: 4px;
+            letter-spacing: 1px;
+        }
+
+        #graph {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+        }
+
+        #graph canvas {
+            border-radius: 6px;
+        }
+
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .avatar-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+            position: relative;
+        }
+
+        .avatar-frame {
+            width: 280px;
+            height: 350px;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .avatar-frame::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 1px,
+                rgba(0, 212, 255, 0.1) 1px,
+                rgba(0, 212, 255, 0.1) 2px
+            );
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .avatar-image {
+            width: 260px;
+            height: 330px;
+            object-fit: cover;
+            filter: 
+                hue-rotate(60deg) 
+                saturate(1.2) 
+                brightness(1.1)
+                drop-shadow(0 0 10px rgba(0, 212, 255, 0.5));
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+            position: relative;
+            z-index: 1;\n            transition: all 0.3s ease;
+        }
+
+        .avatar-label {
+            position: absolute;
+            bottom: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid #00d4ff;
+            padding: 5px 15px;
+            font-size: 10px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            color: #00d4ff;
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+        }
+
+
+        .content-display {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #00d4ff;
+            border-radius: 8px;
+            padding: 20px;
+            height: 160px;
+            overflow-y: auto;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .content-display.active {
+            opacity: 1;
+        }
+
+        .page-container {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            padding: 20px;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .page-container.active {
+            display: block;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #00d4ff;
+            padding-bottom: 15px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            color: #00d4ff;
+            text-shadow: 0 0 15px #00d4ff;
+            letter-spacing: 3px;
+        }
+
+        .back-button {
+            background: transparent;
+            border: 2px solid #00d4ff;
+            color: #00d4ff;
+            padding: 8px 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: #00d4ff;
+            color: #000;
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background: rgba(0, 212, 255, 0.05);
+            border: 2px solid #00d4ff;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.1);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 25px rgba(0, 212, 255, 0.3);
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .card-title {
+            color: #00d4ff;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 0 0 8px #00d4ff;
+        }
+
+        .card-meta {
+            color: #ffffff;
+            font-size: 12px;
+            margin-bottom: 15px;
+            opacity: 0.8;
+        }
+
+        .card-description {
+            color: #ffffff;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .card-tech {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tech-tag {
+            background: rgba(0, 212, 255, 0.2);
+            border: 1px solid #00d4ff;
+            color: #00d4ff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .page-content {
+            color: #ffffff;
+            line-height: 1.8;
+            font-size: 14px;
+        }
+
+        .page-content h3 {
+            color: #00d4ff;
+            margin: 20px 0 10px 0;
+            font-size: 16px;
+        }
+
+        .page-content ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .page-content li {
+            margin-bottom: 5px;
+        }
+
+        .scrollable-content {
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .scrollable-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .scrollable-content::-webkit-scrollbar-track {
+            background: rgba(0, 212, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .scrollable-content::-webkit-scrollbar-thumb {
+            background: #00d4ff;
+            border-radius: 4px;
+        }
+
+        .scrollable-content::-webkit-scrollbar-thumb:hover {
+            background: #0099cc;
+        }
+
+        /* Matrix Animation Styles */
+        .matrix-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 2000;
+            overflow: hidden;
+        }
+        
+        /* White flash transition overlay */
+        .white-flash-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle, #ffffff 0%, #00d4ff 100%);
+            pointer-events: none;
+            z-index: 3000;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        
+        .white-flash-overlay.active {
+            opacity: 1;
+        }
+
+        .matrix-column {
+            position: absolute;
+            top: -100px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: #00d4ff;
+            text-shadow: 0 0 5px #00d4ff;
+            white-space: pre;
+            animation: matrixFall linear;
+            opacity: 0;
+        }
+
+        @keyframes matrixFall {
+            0% {
+                transform: translateY(-100px);
+                opacity: 1;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+        }
+
+        .dissolution-target {
+            transition: all 0.6s ease-out;
+            position: relative;
+        }
+
+        .dissolution-target.dissolving {
+            opacity: 0;
+            filter: blur(3px);
+            transform: scale(0.9);
+        }
+
+        .code-dissolution-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: #00d4ff;
+            z-index: 10;
+            opacity: 0;
+            overflow: hidden;
+        }
+
+        .code-dissolution-overlay.active {
+            opacity: 1;
+            animation: codeDissolve 0.8s ease-out;
+        }
+
+        @keyframes codeDissolve {
+            0% {
+                opacity: 0;
+                transform: scale(1.1);
+            }
+            30% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+        }
+
+        .code-line {
+            white-space: pre;
+            margin: 2px 0;
+            animation: lineDissolve 0.1s ease-in;
+        }
+
+        @keyframes lineDissolve {
+            0% { opacity: 0; transform: translateX(-10px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Page animation states */
+        .page-container {
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.3s ease-out;
+        }
+
+        .page-container.active {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .page-container.entering {
+            animation: pageEnter 0.6s ease-out forwards;
+        }
+
+        @keyframes pageEnter {
+            0% {
+                transform: translateY(30px) scale(0.98);
+                opacity: 0;
+            }
+            50% {
+                transform: translateY(10px) scale(0.99);
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .page-title.typing {
+            overflow: hidden;
+            border-right: 2px solid #00d4ff;
+            animation: typewriter 0.8s steps(20) forwards, blink 1s infinite;
+        }
+
+        @keyframes typewriter {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        .graph-3d-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .node-label {
+            position: absolute;
+            color: #ffffff;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: bold;
+            pointer-events: none;
+            z-index: 100;
+            text-shadow: 0 0 5px #00d4ff;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 2px 6px;
+            border-radius: 3px;
+            border: 1px solid #00d4ff;
+            transform: translate(-50%, -50%);
+        }
+
+        .cursor {
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        /* Mobile Responsive Styles */
+        @media screen and (max-width: 768px) {
+            .terminal-content {
+                display: flex;
+                flex-direction: column;
+                height: auto;
+                min-height: 100vh;
+                padding: 10px;
+                gap: 15px;
+            }
+
+            .left-panel {
+                order: 1;
+                width: 100%;
+            }
+
+            .graph-container {
+                order: 2;
+                width: 100%;
+                height: 300px;
+                margin: 10px 0;
+            }
+
+            .right-panel {
+                order: 3;
+                width: 100%;
+                align-items: center;
+            }
+
+            .avatar-frame {
+                width: 200px;
+                height: 250px;
+            }
+
+            .avatar-image {
+                width: 180px;
+                height: 230px;
+            }
+
+            .menu-section {
+                margin-bottom: 20px;
+            }
+
+            .menu-item {
+                padding: 12px 0;
+                font-size: 14px;
+                text-align: center;
+            }
+
+            .menu-title {
+                text-align: center;
+                font-size: 18px;
+                margin-bottom: 10px;
+            }
+
+            .cards-container {
+                grid-template-columns: 1fr !important;
+                gap: 15px;
+            }
+
+            .card {
+                padding: 15px;
+            }
+
+            .card-title {
+                font-size: 16px;
+            }
+
+            .card-meta {
+                font-size: 11px;
+            }
+
+            .card-description {
+                font-size: 13px;
+                line-height: 1.5;
+            }
+
+            .page-title {
+                font-size: 24px;
+                text-align: center;
+            }
+
+            .page-content {
+                font-size: 13px;
+            }
+
+            .page-content h3 {
+                font-size: 15px;
+                text-align: center;
+                margin: 15px 0 8px 0;
+            }
+
+            .content-display {
+                height: 120px;
+                padding: 15px;
+                font-size: 12px;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .terminal-container {
+                border-radius: 0;
+                border: none;
+                margin: 0;
+            }
+
+            .terminal-content {
+                padding: 5px;
+                gap: 10px;
+            }
+
+            .avatar-frame {
+                width: 160px;
+                height: 200px;
+            }
+
+            .avatar-image {
+                width: 140px;
+                height: 180px;
+            }
+
+            .graph-container {
+                height: 250px;
+            }
+
+            .menu-item {
+                padding: 10px 5px;
+                font-size: 12px;
+            }
+
+            .menu-title {
+                font-size: 16px;
+            }
+
+            .card {
+                padding: 12px;
+            }
+
+            .card-title {
+                font-size: 14px;
+            }
+
+            .card-description {
+                font-size: 12px;
+            }
+
+            .page-title {
+                font-size: 20px;
+            }
+
+            .back-button {
+                padding: 6px 12px;
+                font-size: 10px;
+            }
+        }
+
+        /* Tablet Styles */
+        @media screen and (min-width: 769px) and (max-width: 1024px) {
+            .terminal-content {
+                grid-template-columns: 1fr 350px 1fr;
+                padding: 15px;
+                gap: 15px;
+            }
+
+            .avatar-frame {
+                width: 240px;
+                height: 300px;
+            }
+
+            .avatar-image {
+                width: 220px;
+                height: 280px;
+            }
+        }
+
+        /* Touch-friendly improvements */
+        @media (hover: none) and (pointer: coarse) {
+            .menu-item {
+                padding: 15px 10px;
+                margin: 5px 0;
+                border-radius: 8px;
+                background: rgba(0, 212, 255, 0.05);
+                transition: all 0.2s ease;
+            }
+
+            .menu-item:active {
+                background: rgba(0, 212, 255, 0.2);
+                transform: scale(0.98);
+            }
+
+            .back-button {
+                padding: 12px 16px;
+                margin: 10px;
+                min-height: 44px;
+                min-width: 44px;
+            }
+
+            .card {
+                margin-bottom: 10px;
+                transition: transform 0.2s ease;
+            }
+
+            .card:active {
+                transform: scale(0.98);
+            }
+        }
+
+    </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Aryaman</h1>
-        </header>
+    <div class="terminal-container">
         
-        <main>
-            <section class="intro">
-                <p>Welcome to my personal website.</p>
-            </section>
-            
-            <section class="about">
-                <h2>About Me</h2>
-                <p>I'm a Computer Engineering graduate from Boston University, currently working in Cybersecurity at PwC, with expertise in Machine Learning and software development.</p>
-            </section>
-            
-            <section class="contact">
-                <h2>Get in Touch</h2>
-                <p>Feel free to reach out to me at:</p>
-                <a href="mailto:aryaman@bu.edu">aryaman@bu.edu</a>
-            </section>
-        </main>
+        <div class="terminal-content">
+            <div class="left-panel dissolution-target">
+                <div class="menu-section">
+                    <div class="menu-title">MAIN MENU</div>
+                    <div class="menu-item active" data-section="about" data-category="core">> ABOUT_ME</div>
+                    <div class="menu-item" data-section="projects" data-category="project">> PROJECTS</div>
+                    <div class="menu-item" data-section="education" data-category="edu">> EDUCATION</div>
+                    <div class="menu-item" data-section="contact" data-category="core">> CONTACT</div>
+                    <div class="menu-item" data-section="work" data-category="work">> WORK_EXPERIENCE</div>
+                    <div class="menu-item" data-section="skills" data-category="content">> SKILLS</div>
+                </div>
+            </div>
+
+            <div class="graph-container">
+                <div class="graph-title">SYSTEM MAP</div>
+                <div id="graph"></div>
+            </div>
+
+            <div class="right-panel dissolution-target">
+                <div class="avatar-container">
+                    <div class="avatar-frame">
+                        <img src="avatar-image.png" alt="Avatar" class="avatar-image">
+                        <div class="avatar-label">USER.PROFILE</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="content-display" id="content-display">
+            <div id="content-text">
+                [PLACEHOLDER] Welcome to the system. Select a node from the menu or graph to explore.<span class="cursor">_</span>
+            </div>
+        </div>
         
-        <footer>
-            <p>&copy; 2024 Aryaman Bhavya Gupta. All rights reserved.</p>
-        </footer>
+        <!-- Projects Page -->
+        <div class="page-container" id="projects-page">
+            <div class="page-header">
+                <div class="page-title">PROJECTS.DIR</div>
+                <button class="back-button" onclick="goBack()">&lt; BACK_TO_MAIN</button>
+            </div>
+            <div class="scrollable-content">
+                <div class="cards-container">
+                    <div class="card">
+                        <div class="card-title">Virtual Fitting Room (Senior Design Project)</div>
+                        <div class="card-meta">Sep 2023 - May 2024 | Machine Learning Engineer | Boston University</div>
+                        <div class="card-description">
+                            Implemented machine-learning algorithm to measure facial features by adapting pre-existing models and create accurate 3D models that looked like the user. Planned sprints and explored alternative methods of implementing desired functionality.
+                        </div>
+                        <div class="card-tech">
+                            <span class="tech-tag">Machine Learning</span>
+                            <span class="tech-tag">3D Modeling</span>
+                            <span class="tech-tag">Agile Development</span>
+                            <span class="tech-tag">Computer Vision</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-title">Vulnerability Detection in VS Code</div>
+                        <div class="card-meta">Jan 2023 - May 2023 | Security Research | Boston University</div>
+                        <div class="card-description">
+                            Developed automation tool to analyse 250+ VS code extensions and identify the vulnerable extensions. Identified threats to extensions and developed exploits to test extensions using automated python script. Found and exploited 2 types of vulnerabilities- path traversal and zip slip affecting 500k and 250k users.
+                        </div>
+                        <div class="card-tech">
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">Security Analysis</span>
+                            <span class="tech-tag">Automated Testing</span>
+                            <span class="tech-tag">Vulnerability Research</span>
+                            <span class="tech-tag">Cybersecurity</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-title">PDF Analyzer Web App</div>
+                        <div class="card-meta">Jan 2023 - May 2023 | Full-Stack Development | Boston University</div>
+                        <div class="card-description">
+                            Designed web application using Flask web framework and python backend that allows users to create accounts, upload pdf documents, extract text, analyze it and find similar documents from the web. Automated unit testing and linting using SQL database and a CI/CD pipeline. Improved processing speed using multithreading and integrated third party APIs for web search with advanced features such as text extraction, keyword identification, sentiment analysis, and built-in search functionality.
+                        </div>
+                        <div class="card-tech">
+                            <span class="tech-tag">Flask</span>
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">SQL</span>
+                            <span class="tech-tag">CI/CD</span>
+                            <span class="tech-tag">Multithreading</span>
+                            <span class="tech-tag">Web APIs</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-title">AI Driving</div>
+                        <div class="card-meta">Sep 2022 - Dec 2022 | AI/ML Development | Boston University</div>
+                        <div class="card-description">
+                            Developed and implemented a neural network-based driving system for PyTuxKart using reinforcement learning (RL) techniques, resulting in enhanced kart control and performance, fastest timing in class. Developed planner module that accurately predicted the kart's aimpoint for future positions, leveraging techniques such as deep Q-learning and deep deterministic policy gradient.
+                        </div>
+                        <div class="card-tech">
+                            <span class="tech-tag">Neural Networks</span>
+                            <span class="tech-tag">Reinforcement Learning</span>
+                            <span class="tech-tag">Deep Q-learning</span>
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">PyTuxKart</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- About Page -->
+        <div class="page-container" id="about-page">
+            <div class="page-header">
+                <div class="page-title">ABOUT_ME.EXE</div>
+                <button class="back-button" onclick="goBack()">&lt; BACK_TO_MAIN</button>
+            </div>
+            <div class="scrollable-content">
+                <div class="page-content">
+                    <h3>System Information</h3>
+                    <p>Recent Computer Engineering graduate from Boston University with a concentration in Machine Learning. Currently working as a Cybersecurity Consulting Associate at PricewaterhouseCoopers, specializing in Identity Access Management (IAM) solutions.</p>
+                    
+                    <h3>Core Expertise</h3>
+                    <ul>
+                        <li>Cybersecurity & Identity Access Management (IAM)</li>
+                        <li>Machine Learning & Reinforcement Learning</li>
+                        <li>Software Development & Web Applications</li>
+                        <li>Research & Algorithm Development</li>
+                        <li>Teaching & Mentorship</li>
+                    </ul>
+                    
+                    <h3>Philosophy</h3>
+                    <p>I believe in creating secure, efficient solutions that protect critical business data and user privacy. Passionate about applying machine learning techniques to solve real-world problems and sharing knowledge through teaching and mentorship.</p>
+                    
+                    <h3>Current Focus</h3>
+                    <p>Currently working on Identity Access Management solutions using SailPoint for critical business and data protection challenges, while continuing to explore advanced machine learning applications and cybersecurity innovations.</p>
+                    
+                    <h3>Personal Interests</h3>
+                    <p>Basketball, Cricket, Science Fiction, Hackathons, Sports analysis (NBA, NFL, IPL), Mathematics. Passionate about combining analytical thinking with competitive sports and emerging technologies.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Contact Page -->
+        <div class="page-container" id="contact-page">
+            <div class="page-header">
+                <div class="page-title">CONTACT.INIT</div>
+                <button class="back-button" onclick="goBack()">&lt; BACK_TO_MAIN</button>
+            </div>
+            <div class="scrollable-content">
+                <div class="page-content">
+                    <h3>Communication Protocols</h3>
+                    <div class="cards-container" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+                        <div class="card">
+                            <div class="card-title">Email</div>
+                            <div class="card-description">
+                                aryaman@bu.edu<br>
+                                Response time: &lt; 24 hours<br>
+                                Status: ACTIVE
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-title">LinkedIn</div>
+                            <div class="card-description">
+                                linkedin.com/in/aryaman-bhavya-gupta<br>
+                                Professional inquiries<br>
+                                Status: ACTIVE
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-title">GitHub</div>
+                            <div class="card-description">
+                                github.com/aryamanbgupta<br>
+                                Code collaborations<br>
+                                Status: ACTIVE
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3>Availability</h3>
+                    <p>Currently open to cybersecurity consulting, machine learning projects, and software development opportunities. 
+                    Particularly interested in projects involving:</p>
+                    <ul>
+                        <li>Identity Access Management (IAM) solutions</li>
+                        <li>Machine Learning and AI development</li>
+                        <li>Cybersecurity consulting and analysis</li>
+                        <li>Software development and automation</li>
+                        <li>Research collaboration and academic projects</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Work Experience Page -->
+        <div class="page-container" id="work-page">
+            <div class="page-header">
+                <div class="page-title">WORK_EXPERIENCE.LOG</div>
+                <button class="back-button" onclick="goBack()">&lt; BACK_TO_MAIN</button>
+            </div>
+            <div class="scrollable-content">
+                <div class="cards-container">
+                    <div class="card">
+                        <div class="card-title">Cybersecurity Consulting Associate - PricewaterhouseCoopers</div>
+                        <div class="card-meta">Aug 2024 - Present | Full-time | Boston, MA</div>
+                        <div class="card-description">
+                            Designed, implemented and managed Identity Access Management (IAM) solutions using SailPoint for critical business and data protection challenges after completing training modules for IAM and Cloud Security.
+                        </div>
+                        <div class="card-tech">
+                            <span class="tech-tag">SailPoint</span>
+                            <span class="tech-tag">IAM</span>
+                            <span class="tech-tag">Cloud Security</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-title">Cybersecurity Consulting Intern - PricewaterhouseCoopers</div>
+                        <div class="card-meta">Jun 2023 - Aug 2023 | Internship | Boston, MA</div>
+                        <div class="card-description">
+                            Designed, implemented and managed Identity Access Management (IAM) solutions using Okta for critical business and data protection challenges. Integrated applications using SAML and OIDC on cloud to transfer groups, roles, privileges and setup role-based access. Implemented REST API calls through API gateway using Postman and Okta for customized authentication flows. Programmed an Android app using Okta Verify SDK and Firebase Cloud Messaging for secure user access and authentication.
+                        </div>
+                        <div class="card-tech">
+                            <span class="tech-tag">Okta</span>
+                            <span class="tech-tag">SAML</span>
+                            <span class="tech-tag">OIDC</span>
+                            <span class="tech-tag">Android SDK</span>
+                            <span class="tech-tag">Firebase</span>
+                            <span class="tech-tag">REST APIs</span>
+                            <span class="tech-tag">Postman</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-title">Teaching Assistant - Algorithms & Data Structures</div>
+                        <div class="card-meta">Jan 2023 - May 2023 | Part-time | Boston University</div>
+                        <div class="card-description">
+                            Guided and instructed a class of over 60 students through problem-solving sessions and office hours. Created and automated grading using docker containers running Python & C++ to grade coding assignments.
+                        </div>
+                        <div class="card-tech">
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">C++</span>
+                            <span class="tech-tag">Docker</span>
+                            <span class="tech-tag">Teaching</span>
+                            <span class="tech-tag">Algorithms</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-title">Tutor - College of Engineering</div>
+                        <div class="card-meta">Sep 2022 - Dec 2022 | Part-time | Boston University</div>
+                        <div class="card-description">
+                            Coached and mentored engineering students in over 15 freshman to junior level courses for 80+ hours. Instructed students in math courses - Multivariate Calculus, Differential Equations and Probability & Statistics.
+                        </div>
+                        <div class="card-tech">
+                            <span class="tech-tag">Mathematics</span>
+                            <span class="tech-tag">Tutoring</span>
+                            <span class="tech-tag">Mentorship</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-title">Research Assistant - Integrated Circuits and Systems Lab</div>
+                        <div class="card-meta">Feb 2022 - May 2022 | Part-time | Boston University</div>
+                        <div class="card-description">
+                            Collaborated with a research group to design software-based accelerator for homomorphic encryption, also trained a logistic regression model on encrypted input data. Implemented code using the Microsoft SEAL library to operate on encrypted data, test hardware performance.
+                        </div>
+                        <div class="card-tech">
+                            <span class="tech-tag">Microsoft SEAL</span>
+                            <span class="tech-tag">Homomorphic Encryption</span>
+                            <span class="tech-tag">Machine Learning</span>
+                            <span class="tech-tag">Research</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-title">Software Engineering Intern - Krenai</div>
+                        <div class="card-meta">Dec 2021 - Jan 2022 | Internship | New Delhi</div>
+                        <div class="card-description">
+                            Developed video livestreaming feature using webRTC, socket.io and peerJS for ecommerce platform. Created registration and authentication forms with OAuth 2.0 to handle user sign-up and login.
+                        </div>
+                        <div class="card-tech">
+                            <span class="tech-tag">WebRTC</span>
+                            <span class="tech-tag">Socket.io</span>
+                            <span class="tech-tag">PeerJS</span>
+                            <span class="tech-tag">OAuth 2.0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Certifications Page -->
+        <div class="page-container" id="education-page">
+            <div class="page-header">
+                <div class="page-title">EDUCATION.LOG</div>
+                <button class="back-button" onclick="goBack()">&lt; BACK_TO_MAIN</button>
+            </div>
+            <div class="scrollable-content">
+                <div class="cards-container">
+                    <div class="card">
+                        <div class="card-title">Bachelor of Science in Computer Engineering</div>
+                        <div class="card-meta">Boston University | May 2024 | GPA: 3.95/4.0</div>
+                        <div class="card-description">
+                            Concentration in Machine Learning. Comprehensive study of computer systems, algorithms, software engineering, and machine learning techniques. Strong foundation in both hardware and software aspects of computing.
+                        </div>
+                        <div class="card-tech">
+                            <span class="tech-tag">Machine Learning</span>
+                            <span class="tech-tag">Computer Engineering</span>
+                            <span class="tech-tag">Software Engineering</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-title">Academic Honors & Scholarships</div>
+                        <div class="card-meta">2020-2024 | Recognition & Merit</div>
+                        <div class="card-description">
+                            Trustee Scholar – full tuition merit scholarship awarded to top 20 students of 16,000. Dean's List all semesters, Summa Cum Laude. Exceptional academic performance throughout undergraduate studies.
+                        </div>
+                        <div class="card-tech">
+                            <span class="tech-tag">Trustee Scholar</span>
+                            <span class="tech-tag">Dean's List</span>
+                            <span class="tech-tag">Summa Cum Laude</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-title">Leadership & Activities</div>
+                        <div class="card-meta">2022-2023 | Student Organizations</div>
+                        <div class="card-description">
+                            Secretary of Tau Beta Pi Engineering Honor Society (2023). Treasurer of BU Cricket Team (2022). Active member of IEEE and Engineers without Borders, contributing to technical and community service initiatives.
+                        </div>
+                        <div class="card-tech">
+                            <span class="tech-tag">Tau Beta Pi</span>
+                            <span class="tech-tag">IEEE</span>
+                            <span class="tech-tag">Leadership</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-title">Relevant Coursework</div>
+                        <div class="card-meta">2020-2024 | Advanced Technical Courses</div>
+                        <div class="card-description">
+                            Software Engineering, Machine Learning, Applied Algorithms & Data Structures, Logic Design, Reinforcement Learning, Cybersecurity, Computational Linear Algebra, Computer Organization. Strong theoretical and practical foundation.
+                        </div>
+                        <div class="card-tech">
+                            <span class="tech-tag">Algorithms</span>
+                            <span class="tech-tag">Machine Learning</span>
+                            <span class="tech-tag">Cybersecurity</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Skills Page -->
+        <div class="page-container" id="skills-page">
+            <div class="page-header">
+                <div class="page-title">SKILLS.MATRIX</div>
+                <button class="back-button" onclick="goBack()">&lt; BACK_TO_MAIN</button>
+            </div>
+            <div class="scrollable-content">
+                <div class="page-content">
+                    <h3>Programming Languages</h3>
+                    <div class="cards-container" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                        <div class="card">
+                            <div class="card-title">Python</div>
+                            <div class="card-meta">Expert | Primary Language</div>
+                            <div class="card-description">Machine learning, web development, automation, security tools</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">C++</div>
+                            <div class="card-meta">Advanced | System Programming</div>
+                            <div class="card-description">System programming, algorithms, performance optimization</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">C</div>
+                            <div class="card-meta">Proficient | Low-level Programming</div>
+                            <div class="card-description">Low-level programming, embedded systems, hardware interfacing</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">JavaScript</div>
+                            <div class="card-meta">Proficient | Web Development</div>
+                            <div class="card-description">Web development, DOM manipulation, async programming</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">Kotlin</div>
+                            <div class="card-meta">Proficient | Android Development</div>
+                            <div class="card-description">Android development, mobile applications, JVM ecosystem</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">MATLAB</div>
+                            <div class="card-meta">Intermediate | Mathematical Computing</div>
+                            <div class="card-description">Mathematical computing, signal processing, algorithm prototyping</div>
+                        </div>
+                    </div>
+                    
+                    <h3>Tools & Technologies</h3>
+                    <div class="cards-container" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                        <div class="card">
+                            <div class="card-title">Machine Learning</div>
+                            <div class="card-meta">Advanced | PyTorch, TensorFlow</div>
+                            <div class="card-description">Neural networks, reinforcement learning, computer vision, deep learning</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">Security Tools</div>
+                            <div class="card-meta">Professional | Okta, SailPoint, Ping</div>
+                            <div class="card-description">Identity Access Management, SAML, OIDC, authentication flows</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">Development Tools</div>
+                            <div class="card-meta">Proficient | Git, Docker, Firebase</div>
+                            <div class="card-description">Version control, containerization, cloud services, CI/CD</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">Web Technologies</div>
+                            <div class="card-meta">Proficient | Flask, webRTC</div>
+                            <div class="card-description">Web frameworks, real-time communication, RESTful APIs</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">Hardware & Other</div>
+                            <div class="card-meta">Intermediate | Arduino, Verilog, Unity, Make</div>
+                            <div class="card-description">Embedded systems, hardware description, game development, build systems</div>
+                        </div>
+                    </div>
+                    
+                    <h3>Specialized Skills</h3>
+                    <div class="cards-container" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                        <div class="card">
+                            <div class="card-title">Cybersecurity</div>
+                            <div class="card-meta">Professional | IAM Solutions</div>
+                            <div class="card-description">Identity Access Management, security analysis, vulnerability detection</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">Research & Teaching</div>
+                            <div class="card-meta">Experienced | Academic Excellence</div>
+                            <div class="card-description">Research in homomorphic encryption, teaching 60+ students, mentorship</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">Algorithm Development</div>
+                            <div class="card-meta">Advanced | Problem Solving</div>
+                            <div class="card-description">Reinforcement learning, neural networks, optimization algorithms</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        
+        <!-- Matrix Animation Overlay -->
+        <div class="matrix-overlay" id="matrix-overlay"></div>
     </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Enhanced Graph data structure with projects, work experience, and certifications
+        const graphData = {
+            nodes: [
+                // Core sections
+                { id: "about", name: "ABOUT", category: "core", x: 200, y: 150 },
+                { id: "contact", name: "CONTACT", category: "core", x: 200, y: 450 },
+                
+                // Projects cluster
+                { id: "project1", name: "PROJECT_A", category: "project", x: 100, y: 250 },
+                { id: "project2", name: "PROJECT_B", category: "project", x: 80, y: 320 },
+                { id: "project3", name: "PROJECT_C", category: "project", x: 120, y: 380 },
+                
+                // Work experience cluster
+                { id: "work1", name: "COMPANY_A", category: "work", x: 300, y: 200 },
+                { id: "work2", name: "COMPANY_B", category: "work", x: 320, y: 270 },
+                { id: "work3", name: "COMPANY_C", category: "work", x: 280, y: 340 },
+                
+                // Certifications cluster
+                { id: "cert1", name: "AWS_CERT", category: "cert", x: 150, y: 300 },
+                { id: "cert2", name: "CLOUD_CERT", category: "cert", x: 250, y: 320 },
+                { id: "cert3", name: "DEV_CERT", category: "cert", x: 200, y: 380 },
+                
+                // Blog/Skills
+                { id: "blog", name: "BLOG", category: "content", x: 350, y: 150 },
+                { id: "skills", name: "SKILLS", category: "content", x: 50, y: 150 }
+            ],
+            links: [
+                // Core connections
+                { source: "about", target: "contact" },
+                { source: "about", target: "blog" },
+                { source: "about", target: "skills" },
+                
+                // Project connections
+                { source: "about", target: "project1" },
+                { source: "project1", target: "project2" },
+                { source: "project2", target: "project3" },
+                { source: "project1", target: "work1" },
+                { source: "project3", target: "cert1" },
+                
+                // Work experience connections
+                { source: "work1", target: "work2" },
+                { source: "work2", target: "work3" },
+                { source: "work1", target: "cert2" },
+                { source: "work2", target: "cert3" },
+                
+                // Certification connections
+                { source: "cert1", target: "cert2" },
+                { source: "cert2", target: "cert3" },
+                { source: "cert1", target: "contact" },
+                
+                // Cross-category connections
+                { source: "blog", target: "project1" },
+                { source: "skills", target: "cert1" },
+                { source: "work3", target: "contact" }
+            ]
+        };
+
+        // Enhanced content for each node
+        const sectionContent = {
+            // Core sections
+            about: "[PLACEHOLDER] ABOUT_ME.exe loaded...\n\n[PLACEHOLDER] Passionate developer and problem solver.\n[PLACEHOLDER] Specializing in full-stack development and system architecture.\n[PLACEHOLDER] Constantly learning and exploring new technologies.\n\n[PLACEHOLDER] STATUS: ACTIVE\n[PLACEHOLDER] LOCATION: ~/home/user\n[PLACEHOLDER] MODE: CONTINUOUS_LEARNING",
+            contact: "[PLACEHOLDER] CONTACT_PROTOCOLS.init\n\n[PLACEHOLDER] Email: user@domain.com\n[PLACEHOLDER] LinkedIn: /in/username\n[PLACEHOLDER] GitHub: @username\n[PLACEHOLDER] Twitter: @handle\n\n[PLACEHOLDER] Response Time: <24h\n[PLACEHOLDER] Availability: OPEN_TO_OPPORTUNITIES\n[PLACEHOLDER] Preferred: EMAIL_FIRST",
+            
+            // Projects
+            project1: "[PLACEHOLDER] PROJECT_A.exe\n\n[PLACEHOLDER] Full-Stack Web Application\n[PLACEHOLDER] Tech: React, Node.js, PostgreSQL\n[PLACEHOLDER] Status: DEPLOYED\n[PLACEHOLDER] Users: 1,000+ active\n\n[PLACEHOLDER] Features: Real-time chat, user auth, analytics\n[PLACEHOLDER] Deployment: AWS EC2, Docker",
+            project2: "[PLACEHOLDER] PROJECT_B.exe\n\n[PLACEHOLDER] Mobile App Development\n[PLACEHOLDER] Tech: React Native, Firebase\n[PLACEHOLDER] Status: PUBLISHED\n[PLACEHOLDER] Downloads: 5,000+\n\n[PLACEHOLDER] Platforms: iOS, Android\n[PLACEHOLDER] Rating: 4.7/5 stars",
+            project3: "[PLACEHOLDER] PROJECT_C.exe\n\n[PLACEHOLDER] AI/ML Data Pipeline\n[PLACEHOLDER] Tech: Python, TensorFlow, Apache Kafka\n[PLACEHOLDER] Status: PRODUCTION\n[PLACEHOLDER] Data processed: 10TB+\n\n[PLACEHOLDER] Accuracy: 94%\n[PLACEHOLDER] Latency: <100ms",
+            
+            // Work Experience
+            work1: "[PLACEHOLDER] COMPANY_A.log\n\n[PLACEHOLDER] Software Engineer\n[PLACEHOLDER] Duration: 2022-2024\n[PLACEHOLDER] Team Size: 8 developers\n\n[PLACEHOLDER] Projects: Microservices architecture\n[PLACEHOLDER] Tech: Java, Spring Boot, Kubernetes\n[PLACEHOLDER] Achievements: 40% performance improvement",
+            work2: "[PLACEHOLDER] COMPANY_B.log\n\n[PLACEHOLDER] Full-Stack Developer\n[PLACEHOLDER] Duration: 2020-2022\n[PLACEHOLDER] Team Size: 5 developers\n\n[PLACEHOLDER] Projects: E-commerce platform\n[PLACEHOLDER] Tech: React, Python, AWS\n[PLACEHOLDER] Achievements: Led frontend redesign",
+            work3: "[PLACEHOLDER] COMPANY_C.log\n\n[PLACEHOLDER] Junior Developer\n[PLACEHOLDER] Duration: 2019-2020\n[PLACEHOLDER] Team Size: 12 developers\n\n[PLACEHOLDER] Projects: Legacy system migration\n[PLACEHOLDER] Tech: JavaScript, PHP, MySQL\n[PLACEHOLDER] Achievements: Reduced load times by 60%",
+            
+            // Certifications
+            cert1: "[PLACEHOLDER] AWS_CERT.credential\n\n[PLACEHOLDER] AWS Solutions Architect Associate\n[PLACEHOLDER] Issued: 2023\n[PLACEHOLDER] Valid until: 2026\n[PLACEHOLDER] Score: 850/1000\n\n[PLACEHOLDER] Skills: EC2, S3, RDS, Lambda\n[PLACEHOLDER] Projects: 15+ AWS deployments",
+            cert2: "[PLACEHOLDER] CLOUD_CERT.credential\n\n[PLACEHOLDER] Google Cloud Professional\n[PLACEHOLDER] Issued: 2023\n[PLACEHOLDER] Valid until: 2025\n[PLACEHOLDER] Score: 92%\n\n[PLACEHOLDER] Skills: GKE, BigQuery, Cloud Functions\n[PLACEHOLDER] Projects: Multi-cloud architecture",
+            cert3: "[PLACEHOLDER] DEV_CERT.credential\n\n[PLACEHOLDER] Kubernetes Administrator\n[PLACEHOLDER] Issued: 2022\n[PLACEHOLDER] Valid until: 2025\n[PLACEHOLDER] Score: 88%\n\n[PLACEHOLDER] Skills: Pod management, networking\n[PLACEHOLDER] Clusters managed: 20+",
+            
+            // Content sections
+            blog: "[PLACEHOLDER] BLOG_POSTS.log streaming...\n\n[PLACEHOLDER] [2024] Understanding System Design\n[PLACEHOLDER] [2024] Database Optimization Techniques\n[PLACEHOLDER] [2024] Modern JavaScript Patterns\n[PLACEHOLDER] [2023] Building Scalable APIs\n\n[PLACEHOLDER] Total Posts: 47\n[PLACEHOLDER] Total Views: 25,847\n[PLACEHOLDER] Status: REGULARLY_UPDATED",
+            skills: "[PLACEHOLDER] SKILLS.matrix loaded...\n\n[PLACEHOLDER] Programming: JavaScript, Python, Java\n[PLACEHOLDER] Frameworks: React, Node.js, Spring\n[PLACEHOLDER] Databases: PostgreSQL, MongoDB\n[PLACEHOLDER] Cloud: AWS, GCP, Azure\n[PLACEHOLDER] DevOps: Docker, Kubernetes, CI/CD\n\n[PLACEHOLDER] Level: ADVANCED\n[PLACEHOLDER] Years: 5+ experience"
+        };
+
+        // 3D Graph variables
+        let scene, camera, renderer, graph3D, nodeObjects = [], linkObjects = [];
+        let rotationSpeed = 0.002;
+        let selectedCategory = null;
+        
+        // Initialize the 3D graph
+        function initGraph() {
+            const container = document.getElementById('graph');
+            const containerRect = container.getBoundingClientRect();
+            const width = Math.max(300, containerRect.width || 400);
+            const height = Math.max(250, containerRect.height || 500);
+            
+            // Scene setup
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(width, height);
+            renderer.setClearColor(0x000000, 0);
+            container.appendChild(renderer.domElement);
+            
+            // Create 3D graph group
+            graph3D = new THREE.Group();
+            scene.add(graph3D);
+            
+            // Category colors
+            const categoryColors = {
+                core: 0xffffff,
+                project: 0x00d4ff,
+                work: 0xff6b35,
+                cert: 0x4ecdc4,
+                content: 0xffe66d
+            };
+            
+            // Convert 2D positions to 3D
+            const nodes3D = graphData.nodes.map(node => ({
+                ...node,
+                x: (node.x - 200) * 0.01, // Scale and center
+                y: (250 - node.y) * 0.01, // Flip Y and center
+                z: (Math.random() - 0.5) * 2 // Random Z depth
+            }));
+            
+            // Create node spheres
+            nodes3D.forEach((node, index) => {
+                const geometry = new THREE.SphereGeometry(0.15, 16, 16);
+                const material = new THREE.MeshBasicMaterial({ 
+                    color: categoryColors[node.category] || 0x00d4ff,
+                    transparent: true,
+                    opacity: 0.8
+                });
+                const sphere = new THREE.Mesh(geometry, material);
+                sphere.position.set(node.x, node.y, node.z);
+                sphere.userData = node;
+                
+                // Add glow effect
+                const glowGeometry = new THREE.SphereGeometry(0.2, 16, 16);
+                const glowMaterial = new THREE.MeshBasicMaterial({
+                    color: categoryColors[node.category] || 0x00d4ff,
+                    transparent: true,
+                    opacity: 0.3
+                });
+                const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+                glow.position.copy(sphere.position);
+                
+                graph3D.add(sphere);
+                graph3D.add(glow);
+                nodeObjects.push({ sphere, glow, node });
+            });
+            
+            // Create links
+            graphData.links.forEach(link => {
+                const sourceNode = nodes3D.find(n => n.id === link.source);
+                const targetNode = nodes3D.find(n => n.id === link.target);
+                
+                if (sourceNode && targetNode) {
+                    const points = [
+                        new THREE.Vector3(sourceNode.x, sourceNode.y, sourceNode.z),
+                        new THREE.Vector3(targetNode.x, targetNode.y, targetNode.z)
+                    ];
+                    
+                    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+                    const material = new THREE.LineBasicMaterial({ 
+                        color: 0x00d4ff, 
+                        transparent: true, 
+                        opacity: 0.4 
+                    });
+                    const line = new THREE.Line(geometry, material);
+                    line.userData = { source: link.source, target: link.target };
+                    
+                    graph3D.add(line);
+                    linkObjects.push(line);
+                }
+            });
+            
+            // Position camera
+            camera.position.set(0, 0, 5);
+            camera.lookAt(0, 0, 0);
+            
+            // Add mouse interaction
+            addGraphInteraction();
+            
+            // Start animation loop
+            animate3D();
+            
+            return { nodeObjects, linkObjects };
+        }
+
+        // Menu functionality
+        function initMenu() {
+            const menuItems = document.querySelectorAll('.menu-item[data-section]');
+            
+            menuItems.forEach(item => {
+                // Click event
+                item.addEventListener('click', () => {
+                    const section = item.dataset.section;
+                    const category = item.dataset.category;
+                    
+                    // Check if there's a dedicated page for this section
+                    const pageId = section + '-page';
+                    const pageElement = document.getElementById(pageId);
+                    
+                    if (pageElement) {
+                        navigateToPage(pageId);
+                    } else {
+                        selectSection(section, category);
+                    }
+                });
+                
+                // Hover events
+                item.addEventListener('mouseenter', () => {
+                    const section = item.dataset.section;
+                    const category = item.dataset.category;
+                    highlightGraphNodes(section, category);
+                });
+                
+                item.addEventListener('mouseleave', () => {
+                    resetGraphHighlight();
+                });
+            });
+        }
+        
+        // Navigation functions with animation
+        function navigateToPage(pageId) {
+            const section = pageId.replace('-page', '');
+            const targetNode = findGraphNode(section);
+            
+            // Start the animation sequence
+            startTransitionAnimation(pageId, targetNode);
+        }
+        
+        // Animation sequence controller
+        async function startTransitionAnimation(pageId, targetNode) {
+            // Phase 1: Code dissolution of menu and picture
+            startCodeDissolution();
+            
+            // Phase 2: Rotate graph to bring target node to front
+            setTimeout(() => {
+                if (targetNode) {
+                    rotateGraphToNode(targetNode);
+                }
+            }, 300);
+            
+            // Phase 3: Camera zoom to node
+            setTimeout(() => {
+                if (targetNode) {
+                    animateCameraToNode(targetNode);
+                }
+            }, 800);
+            
+            // Phase 4: Page transition
+            setTimeout(() => {
+                showPageWithAnimation(pageId);
+            }, 1400);
+            
+            // Cleanup
+            setTimeout(() => {
+                cleanupTransitionEffects();
+            }, 2000);
+        }
+        
+        // Find corresponding graph node
+        function findGraphNode(sectionId) {
+            return nodeObjects.find(obj => obj.node.id === sectionId);
+        }
+        
+        // Matrix effect functions
+        function startMatrixEffect() {
+            const overlay = document.getElementById('matrix-overlay');
+            overlay.innerHTML = '';
+            
+            const matrixChars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZアイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+            const columns = 40;
+            
+            for (let i = 0; i < columns; i++) {
+                createMatrixColumn(i, columns, matrixChars, overlay);
+            }
+        }
+        
+        function createMatrixColumn(index, totalColumns, chars, container) {
+            const column = document.createElement('div');
+            column.className = 'matrix-column';
+            column.style.left = `${(index / totalColumns) * 100}%`;
+            column.style.animationDuration = `${0.5 + Math.random() * 0.8}s`;
+            column.style.animationDelay = `${Math.random() * 0.3}s`;
+            
+            // Generate random characters
+            let text = '';
+            const length = 15 + Math.floor(Math.random() * 10);
+            for (let i = 0; i < length; i++) {
+                text += chars[Math.floor(Math.random() * chars.length)] + '\n';
+            }
+            column.textContent = text;
+            
+            container.appendChild(column);
+        }
+        
+        // Code dissolution effect
+        function startCodeDissolution() {
+            document.querySelectorAll('.dissolution-target').forEach(element => {
+                createCodeOverlay(element);
+                element.classList.add('dissolving');
+            });
+        }
+        
+        // Create code overlay for dissolution effect
+        function createCodeOverlay(element) {
+            const overlay = document.createElement('div');
+            overlay.className = 'code-dissolution-overlay';
+            
+            const codeLines = [
+                'function dissolve() {',
+                '  const elements = document.querySelectorAll(".target");',
+                '  elements.forEach(el => {',
+                '    el.style.opacity = "0";',
+                '    el.style.transform = "scale(0.9)";',
+                '  });',
+                '}',
+                '',
+                '// Initiating dissolution...',
+                'dissolve();',
+                '// Memory freed: ' + Math.floor(Math.random() * 1000) + 'KB',
+                '// Status: TRANSITIONING',
+                '// Target: ' + (element.querySelector('.menu-title') ? 'MENU_SYSTEM' : 'AVATAR_DISPLAY'),
+                '// Protocol: MATRIX_SHIFT'
+            ];
+            
+            codeLines.forEach((line, index) => {
+                const lineEl = document.createElement('div');
+                lineEl.className = 'code-line';
+                lineEl.textContent = line;
+                lineEl.style.animationDelay = `${index * 50}ms`;
+                overlay.appendChild(lineEl);
+            });
+            
+            element.style.position = 'relative';
+            element.appendChild(overlay);
+            
+            // Activate overlay after a short delay
+            setTimeout(() => {
+                overlay.classList.add('active');
+            }, 100);
+        }
+        
+        
+        // Page transition with animation
+        function showPageWithAnimation(pageId) {
+            // Create white flash overlay
+            const flashOverlay = document.createElement('div');
+            flashOverlay.className = 'white-flash-overlay';
+            document.body.appendChild(flashOverlay);
+            
+            // Trigger white flash
+            setTimeout(() => {
+                flashOverlay.classList.add('active');
+            }, 50);
+            
+            // Hide main terminal content during flash
+            setTimeout(() => {
+                document.querySelector('.terminal-content').style.display = 'none';
+                document.querySelector('.content-display').style.display = 'none';
+                
+                // Hide all pages first
+                document.querySelectorAll('.page-container').forEach(page => {
+                    page.classList.remove('active', 'entering');
+                });
+                
+                // Show selected page with animation
+                const targetPage = document.getElementById(pageId);
+                targetPage.classList.add('active', 'entering');
+                
+                // Fade out white flash
+                flashOverlay.classList.remove('active');
+                
+                // Remove flash overlay after transition
+                setTimeout(() => {
+                    if (flashOverlay.parentNode) {
+                        flashOverlay.parentNode.removeChild(flashOverlay);
+                    }
+                }, 500);
+                
+                // Add typewriter effect to page title
+                setTimeout(() => {
+                    const pageTitle = targetPage.querySelector('.page-title');
+                    if (pageTitle) {
+                        pageTitle.classList.add('typing');
+                        // Remove typing class after animation
+                        setTimeout(() => {
+                            pageTitle.classList.remove('typing');
+                        }, 1000);
+                    }
+                }, 200);
+            }, 300);
+        }
+        
+        // Cleanup transition effects
+        function cleanupTransitionEffects() {
+            // Clear matrix overlay
+            const matrixOverlay = document.getElementById('matrix-overlay');
+            matrixOverlay.innerHTML = '';
+            matrixOverlay.classList.remove('active');
+            
+            // Remove dissolution classes and code overlays
+            document.querySelectorAll('.dissolution-target').forEach(element => {
+                element.classList.remove('dissolving');
+                const overlay = element.querySelector('.code-dissolution-overlay');
+                if (overlay) {
+                    overlay.remove();
+                }
+            });
+            
+            // Remove page dissolution
+            document.querySelector('.terminal-container').classList.remove('page-dissolve', 'dissolving');
+            
+            // Reset camera and graph
+            resetCameraAndGraph();
+        }
+        
+        // Reset camera and graph to original state
+        function resetCameraAndGraph() {
+            if (camera) {
+                camera.position.set(0, 0, 5);
+                camera.lookAt(0, 0, 0);
+            }
+            
+            // Reset all node scales and opacity
+            nodeObjects.forEach(obj => {
+                obj.sphere.scale.set(1, 1, 1);
+                obj.glow.scale.set(1, 1, 1);
+                obj.sphere.material.opacity = 0.8;
+                obj.glow.material.opacity = 0.3;
+            });
+            
+            linkObjects.forEach(link => {
+                link.material.opacity = 0.4;
+            });
+        }
+        
+        function goBack() {
+            // Hide all pages
+            document.querySelectorAll('.page-container').forEach(page => {
+                page.classList.remove('active', 'entering');
+            });
+            
+            // Show main terminal content
+            document.querySelector('.terminal-content').style.display = 'grid';
+            document.querySelector('.content-display').style.display = 'block';
+            
+            // Reset menu selection
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector('[data-section="about"]').classList.add('active');
+            
+            // Reset all animation states
+            cleanupTransitionEffects();
+            resetGraphHighlight();
+        }
+
+        // 3D Animation loop
+        function animate3D() {
+            requestAnimationFrame(animate3D);
+            
+            // Slow rotation
+            if (graph3D) {
+                graph3D.rotation.y += rotationSpeed;
+                graph3D.rotation.x += rotationSpeed * 0.5;
+            }
+            
+            renderer.render(scene, camera);
+        }
+        
+        // Mouse interaction for 3D graph
+        function addGraphInteraction() {
+            const raycaster = new THREE.Raycaster();
+            const mouse = new THREE.Vector2();
+            
+            renderer.domElement.addEventListener('click', onGraphClick);
+            renderer.domElement.addEventListener('mousemove', onGraphMouseMove);
+            
+            function onGraphClick(event) {
+                const rect = renderer.domElement.getBoundingClientRect();
+                mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+                mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+                
+                raycaster.setFromCamera(mouse, camera);
+                const spheres = nodeObjects.map(obj => obj.sphere);
+                const intersects = raycaster.intersectObjects(spheres);
+                
+                if (intersects.length > 0) {
+                    const clickedNode = intersects[0].object.userData;
+                    // Graph clicks only show content in bottom panel, no navigation to pages
+                    selectSection(clickedNode.id, clickedNode.category);
+                }
+            }
+            
+            function onGraphMouseMove(event) {
+                const rect = renderer.domElement.getBoundingClientRect();
+                mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+                mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+                
+                raycaster.setFromCamera(mouse, camera);
+                const spheres = nodeObjects.map(obj => obj.sphere);
+                const intersects = raycaster.intersectObjects(spheres);
+                
+                // Reset all node scales
+                nodeObjects.forEach(obj => {
+                    obj.sphere.scale.set(1, 1, 1);
+                    obj.glow.scale.set(1, 1, 1);
+                });
+                
+                // Scale up hovered node
+                if (intersects.length > 0) {
+                    const hoveredObj = nodeObjects.find(obj => obj.sphere === intersects[0].object);
+                    if (hoveredObj) {
+                        hoveredObj.sphere.scale.set(1.2, 1.2, 1.2);
+                        hoveredObj.glow.scale.set(1.3, 1.3, 1.3);
+                    }
+                    renderer.domElement.style.cursor = 'pointer';
+                } else {
+                    renderer.domElement.style.cursor = 'default';
+                }
+            }
+        }
+
+        // Section selection with 3D category highlighting
+        function selectSection(sectionId, category) {
+            selectedCategory = category;
+            
+            // Update menu
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`[data-section="${sectionId}"]`).classList.add('active');
+
+            // Reset all nodes and links
+            nodeObjects.forEach(obj => {
+                obj.sphere.material.opacity = 0.4;
+                obj.glow.material.opacity = 0.1;
+                obj.sphere.scale.set(1, 1, 1);
+            });
+            
+            linkObjects.forEach(link => {
+                link.material.opacity = 0.2;
+            });
+            
+            // Highlight nodes in the same category
+            nodeObjects.forEach(obj => {
+                if (obj.node.category === category) {
+                    obj.sphere.material.opacity = 1.0;
+                    obj.glow.material.opacity = 0.5;
+                }
+                
+                // Make specific node more prominent if it exists
+                if (obj.node.id === sectionId) {
+                    obj.sphere.material.opacity = 1.0;
+                    obj.glow.material.opacity = 0.8;
+                    obj.sphere.scale.set(1.3, 1.3, 1.3);
+                }
+            });
+            
+            // Highlight connected links
+            linkObjects.forEach(link => {
+                if (link.userData.source === sectionId || link.userData.target === sectionId) {
+                    link.material.opacity = 0.8;
+                } else if (nodeObjects.find(obj => obj.node.id === link.userData.source && obj.node.category === category) ||
+                          nodeObjects.find(obj => obj.node.id === link.userData.target && obj.node.category === category)) {
+                    link.material.opacity = 0.5;
+                }
+            });
+            
+            // Show content
+            if (sectionContent[sectionId]) {
+                showContent(sectionContent[sectionId]);
+            } else {
+                showCategorySummary(category, sectionId);
+            }
+        }
+
+        // Content display
+        function showContent(content) {
+            const display = document.getElementById('content-display');
+            const textEl = document.getElementById('content-text');
+            
+            display.classList.add('active');
+            
+            // Typewriter effect
+            textEl.innerHTML = '';
+            let i = 0;
+            const typeWriter = () => {
+                if (i < content.length) {
+                    textEl.innerHTML += content.charAt(i);
+                    i++;
+                    setTimeout(typeWriter, 30);
+                } else {
+                    textEl.innerHTML += '<span class="cursor">_</span>';
+                }
+            };
+            typeWriter();
+        }
+
+        // 3D Graph animations
+        function animateGraph() {
+            // Temporarily increase rotation speed
+            const originalSpeed = rotationSpeed;
+            rotationSpeed = 0.02;
+            
+            // Reset after 3 seconds
+            setTimeout(() => {
+                rotationSpeed = originalSpeed;
+            }, 3000);
+        }
+
+
+        // Clock
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('en-US', { 
+                hour12: false,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('current-time').textContent = timeStr;
+        }
+
+        // 3D Graph utility functions
+        function resetGraphHighlight() {
+            nodeObjects.forEach(obj => {
+                obj.sphere.material.opacity = 0.8;
+                obj.glow.material.opacity = 0.3;
+                obj.sphere.scale.set(1, 1, 1);
+            });
+            
+            linkObjects.forEach(link => {
+                link.material.opacity = 0.4;
+            });
+        }
+        
+        // Highlight graph nodes based on menu hover
+        function highlightGraphNodes(sectionId, category) {
+            // Reset all nodes first
+            nodeObjects.forEach(obj => {
+                obj.sphere.material.opacity = 0.3;
+                obj.glow.material.opacity = 0.1;
+                obj.sphere.scale.set(1, 1, 1);
+            });
+            
+            linkObjects.forEach(link => {
+                link.material.opacity = 0.2;
+            });
+            
+            // Highlight nodes in the same category
+            nodeObjects.forEach(obj => {
+                if (obj.node.category === category) {
+                    obj.sphere.material.opacity = 1.0;
+                    obj.glow.material.opacity = 0.6;
+                    obj.sphere.scale.set(1.1, 1.1, 1.1);
+                }
+                
+                // Make specific node extra prominent if it exists
+                if (obj.node.id === sectionId) {
+                    obj.sphere.material.opacity = 1.0;
+                    obj.glow.material.opacity = 0.9;
+                    obj.sphere.scale.set(1.4, 1.4, 1.4);
+                    
+                    // Add pulsing glow effect
+                    const pulseScale = 1.4 + Math.sin(Date.now() * 0.005) * 0.1;
+                    obj.glow.scale.set(pulseScale, pulseScale, pulseScale);
+                }
+            });
+            
+            // Highlight connected links
+            linkObjects.forEach(link => {
+                const sourceNode = nodeObjects.find(obj => obj.node.id === link.userData.source);
+                const targetNode = nodeObjects.find(obj => obj.node.id === link.userData.target);
+                
+                if ((sourceNode && sourceNode.node.category === category) || 
+                    (targetNode && targetNode.node.category === category)) {
+                    link.material.opacity = 0.6;
+                }
+                
+                if (link.userData.source === sectionId || link.userData.target === sectionId) {
+                    link.material.opacity = 0.9;
+                }
+            });
+        }
+
+        // Show category summary for grouped sections
+        function showCategorySummary(category, sectionId) {
+            const categorySummaries = {
+                project: "[PLACEHOLDER] PROJECTS.directory accessed...\n\n[PLACEHOLDER] Active Projects: 3\n[PLACEHOLDER] > PROJECT_A: Full-Stack Web App [DEPLOYED]\n[PLACEHOLDER] > PROJECT_B: Mobile Application [PUBLISHED]\n[PLACEHOLDER] > PROJECT_C: AI/ML Pipeline [PRODUCTION]\n\n[PLACEHOLDER] Total commits: 2,847\n[PLACEHOLDER] Repositories: 15\n[PLACEHOLDER] Languages: JavaScript, Python, Java\n\n[PLACEHOLDER] Click individual project nodes for details.",
+                work: "[PLACEHOLDER] WORK_EXPERIENCE.log loaded...\n\n[PLACEHOLDER] Total Experience: 5+ years\n[PLACEHOLDER] > COMPANY_A: Software Engineer (2022-2024)\n[PLACEHOLDER] > COMPANY_B: Full-Stack Developer (2020-2022)\n[PLACEHOLDER] > COMPANY_C: Junior Developer (2019-2020)\n\n[PLACEHOLDER] Technologies: 20+ frameworks\n[PLACEHOLDER] Team leadership: 3 projects\n[PLACEHOLDER] Performance improvements: 40%+ average\n\n[PLACEHOLDER] Click company nodes for details.",
+                cert: "[PLACEHOLDER] CERTIFICATIONS.vault accessed...\n\n[PLACEHOLDER] Active Certifications: 3\n[PLACEHOLDER] > AWS Solutions Architect Associate\n[PLACEHOLDER] > Google Cloud Professional\n[PLACEHOLDER] > Kubernetes Administrator\n\n[PLACEHOLDER] Total study hours: 500+\n[PLACEHOLDER] Passing rate: 92% average\n[PLACEHOLDER] Valid through: 2025-2026\n\n[PLACEHOLDER] Click individual certs for details.",
+                content: "[PLACEHOLDER] CONTENT.stream active...\n\n[PLACEHOLDER] > BLOG: 47 posts, 25K+ views\n[PLACEHOLDER] > SKILLS: Advanced level, 5+ years\n\n[PLACEHOLDER] Blog topics: System Design, DevOps, Web Dev\n[PLACEHOLDER] Core skills: JavaScript, Python, Cloud\n[PLACEHOLDER] Learning: Always exploring new tech\n\n[PLACEHOLDER] Click nodes for detailed breakdowns."
+            };
+            
+            const content = categorySummaries[category] || sectionContent[sectionId] || `${sectionId.toUpperCase()}.exe loaded...\n\nContent loading...\n\nSTATUS: READY\nMODE: INTERACTIVE`;
+            showContent(content);
+        }
+
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', () => {
+            initGraph();
+            initMenu();
+            selectSection('about', 'core');
+            updateClock();
+            setInterval(updateClock, 1000);
+            
+            // Handle window resize for responsive graph
+            let resizeTimeout;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => {
+                    if (renderer && camera) {
+                        const container = document.getElementById('graph');
+                        const containerRect = container.getBoundingClientRect();
+                        const width = Math.max(300, containerRect.width || 400);
+                        const height = Math.max(250, containerRect.height || 500);
+                        
+                        camera.aspect = width / height;
+                        camera.updateProjectionMatrix();
+                        renderer.setSize(width, height);
+                    }
+                }, 250);
+            });
+        });
+    </script>
 </body>
-</html> 
+</html>
