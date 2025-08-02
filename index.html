@@ -1661,9 +1661,12 @@
                 page.classList.remove('active', 'entering');
             });
             
-            // Show main terminal content
-            document.querySelector('.terminal-content').style.display = 'grid';
-            document.querySelector('.content-display').style.display = 'block';
+            // Show main terminal content - remove inline style to let CSS handle responsiveness
+            const terminalContent = document.querySelector('.terminal-content');
+            const contentDisplay = document.querySelector('.content-display');
+            
+            terminalContent.style.display = '';
+            contentDisplay.style.display = '';
             
             // Reset menu selection
             document.querySelectorAll('.menu-item').forEach(item => {
