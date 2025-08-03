@@ -797,7 +797,7 @@
 
         <div class="content-display" id="content-display">
             <div id="content-text">
-                [PLACEHOLDER] Welcome to the system. Select a node from the menu or graph to explore.<span class="cursor">_</span>
+SYSTEM.init > Aryaman Bhavya Gupta | Computer Engineer\n\n> Boston University Graduate | GPA: 3.95/4.0\n> Current: Cybersecurity Consulting Associate @ PwC\n> Specialization: IAM Solutions & Machine Learning\n\nSTATUS: ONLINE | Navigate menu or interact with system map<span class="cursor">_</span>
             </div>
         </div>
         
@@ -1224,79 +1224,129 @@
                 { id: "contact", name: "CONTACT", category: "core", x: 200, y: 450 },
                 
                 // Projects cluster
-                { id: "project1", name: "PROJECT_A", category: "project", x: 100, y: 250 },
-                { id: "project2", name: "PROJECT_B", category: "project", x: 80, y: 320 },
-                { id: "project3", name: "PROJECT_C", category: "project", x: 120, y: 380 },
+                { id: "project1", name: "VIRTUAL_FITTING", category: "project", x: 100, y: 250 },
+                { id: "project2", name: "VSCODE_SECURITY", category: "project", x: 80, y: 320 },
+                { id: "project3", name: "PDF_ANALYZER", category: "project", x: 120, y: 380 },
+                { id: "project4", name: "AI_DRIVING", category: "project", x: 140, y: 200 },
                 
                 // Work experience cluster
-                { id: "work1", name: "COMPANY_A", category: "work", x: 300, y: 200 },
-                { id: "work2", name: "COMPANY_B", category: "work", x: 320, y: 270 },
-                { id: "work3", name: "COMPANY_C", category: "work", x: 280, y: 340 },
+                { id: "work1", name: "PWC_CURRENT", category: "work", x: 300, y: 200 },
+                { id: "work2", name: "PWC_INTERN", category: "work", x: 320, y: 270 },
+                { id: "work3", name: "BU_TEACHING", category: "work", x: 280, y: 340 },
+                { id: "work4", name: "BU_TUTOR", category: "work", x: 350, y: 300 },
+                { id: "work5", name: "BU_RESEARCH", category: "work", x: 330, y: 370 },
                 
-                // Certifications cluster
-                { id: "cert1", name: "AWS_CERT", category: "cert", x: 150, y: 300 },
-                { id: "cert2", name: "CLOUD_CERT", category: "cert", x: 250, y: 320 },
-                { id: "cert3", name: "DEV_CERT", category: "cert", x: 200, y: 380 },
+                // Education cluster
+                { id: "edu1", name: "BU_DEGREE", category: "edu", x: 150, y: 300 },
+                { id: "edu2", name: "TRUSTEE_SCHOLAR", category: "edu", x: 250, y: 320 },
+                { id: "edu3", name: "LEADERSHIP", category: "edu", x: 200, y: 380 },
                 
-                // Blog/Skills
-                { id: "blog", name: "BLOG", category: "content", x: 350, y: 150 },
-                { id: "skills", name: "SKILLS", category: "content", x: 50, y: 150 }
+                // Technical Skills
+                { id: "tech1", name: "IAM_SECURITY", category: "tech", x: 350, y: 150 },
+                { id: "tech2", name: "ML_AI", category: "tech", x: 50, y: 150 },
+                { id: "tech3", name: "PROGRAMMING", category: "tech", x: 100, y: 100 },
+                
+                // Personal
+                { id: "personal1", name: "INTERESTS", category: "personal", x: 50, y: 400 },
+                { id: "personal2", name: "ACHIEVEMENTS", category: "personal", x: 350, y: 400 }
             ],
             links: [
-                // Core connections
+                // Core hub connections
                 { source: "about", target: "contact" },
-                { source: "about", target: "blog" },
-                { source: "about", target: "skills" },
-                
-                // Project connections
+                { source: "about", target: "edu1" },
+                { source: "about", target: "work1" },
                 { source: "about", target: "project1" },
-                { source: "project1", target: "project2" },
+                
+                // Career progression path
+                { source: "edu2", target: "edu1" },
+                { source: "edu1", target: "work5" },
+                { source: "work5", target: "work4" },
+                { source: "work4", target: "work3" },
+                { source: "work3", target: "work2" },
+                { source: "work2", target: "work1" },
+                
+                // Education connections
+                { source: "edu2", target: "edu3" },
+                { source: "edu3", target: "personal2" },
+                { source: "edu1", target: "tech3" },
+                
+                // Project-skill connections
+                { source: "project1", target: "tech2" },
+                { source: "project2", target: "tech1" },
+                { source: "project3", target: "tech3" },
+                { source: "project4", target: "tech2" },
+                
+                // Work-skill connections
+                { source: "work1", target: "tech1" },
+                { source: "work2", target: "tech1" },
+                { source: "work5", target: "tech2" },
+                
+                // Project interconnections
+                { source: "project1", target: "project4" },
                 { source: "project2", target: "project3" },
-                { source: "project1", target: "work1" },
-                { source: "project3", target: "cert1" },
                 
-                // Work experience connections
-                { source: "work1", target: "work2" },
-                { source: "work2", target: "work3" },
-                { source: "work1", target: "cert2" },
-                { source: "work2", target: "cert3" },
+                // Personal connections
+                { source: "personal1", target: "contact" },
+                { source: "personal2", target: "edu2" },
                 
-                // Certification connections
-                { source: "cert1", target: "cert2" },
-                { source: "cert2", target: "cert3" },
-                { source: "cert1", target: "contact" },
-                
-                // Cross-category connections
-                { source: "blog", target: "project1" },
-                { source: "skills", target: "cert1" },
-                { source: "work3", target: "contact" }
+                // Cross-category logical connections
+                { source: "tech2", target: "work5" },
+                { source: "tech1", target: "work1" },
+                { source: "edu3", target: "work4" }
             ]
         };
 
         // Enhanced content for each node
         const sectionContent = {
             // Core sections
-            about: "[PLACEHOLDER] ABOUT_ME.exe loaded...\n\n[PLACEHOLDER] Passionate developer and problem solver.\n[PLACEHOLDER] Specializing in full-stack development and system architecture.\n[PLACEHOLDER] Constantly learning and exploring new technologies.\n\n[PLACEHOLDER] STATUS: ACTIVE\n[PLACEHOLDER] LOCATION: ~/home/user\n[PLACEHOLDER] MODE: CONTINUOUS_LEARNING",
-            contact: "[PLACEHOLDER] CONTACT_PROTOCOLS.init\n\n[PLACEHOLDER] Email: user@domain.com\n[PLACEHOLDER] LinkedIn: /in/username\n[PLACEHOLDER] GitHub: @username\n[PLACEHOLDER] Twitter: @handle\n\n[PLACEHOLDER] Response Time: <24h\n[PLACEHOLDER] Availability: OPEN_TO_OPPORTUNITIES\n[PLACEHOLDER] Preferred: EMAIL_FIRST",
+            about: "ABOUT_ME.exe loaded...\n\nRecent Computer Engineering graduate from Boston University with concentration in Machine Learning. Currently working as Cybersecurity Consulting Associate at PricewaterhouseCoopers, specializing in Identity Access Management (IAM) solutions.\n\nCore expertise in cybersecurity, machine learning, software development, research, and teaching. Passionate about creating secure, efficient solutions that protect critical business data.\n\nSTATUS: ACTIVE\nLOCATION: Boston, MA\nMODE: CONTINUOUS_LEARNING",
+            contact: "CONTACT_PROTOCOLS.init\n\nEmail: aryaman@bu.edu\nLinkedIn: linkedin.com/in/aryaman-bhavya-gupta\nGitHub: github.com/aryamanbgupta\n\nResponse Time: < 24 hours\nAvailability: OPEN_TO_OPPORTUNITIES\nPreferred: EMAIL_FIRST\n\nCurrently interested in cybersecurity consulting, machine learning projects, IAM solutions, and software development opportunities.",
             
             // Projects
-            project1: "[PLACEHOLDER] PROJECT_A.exe\n\n[PLACEHOLDER] Full-Stack Web Application\n[PLACEHOLDER] Tech: React, Node.js, PostgreSQL\n[PLACEHOLDER] Status: DEPLOYED\n[PLACEHOLDER] Users: 1,000+ active\n\n[PLACEHOLDER] Features: Real-time chat, user auth, analytics\n[PLACEHOLDER] Deployment: AWS EC2, Docker",
-            project2: "[PLACEHOLDER] PROJECT_B.exe\n\n[PLACEHOLDER] Mobile App Development\n[PLACEHOLDER] Tech: React Native, Firebase\n[PLACEHOLDER] Status: PUBLISHED\n[PLACEHOLDER] Downloads: 5,000+\n\n[PLACEHOLDER] Platforms: iOS, Android\n[PLACEHOLDER] Rating: 4.7/5 stars",
-            project3: "[PLACEHOLDER] PROJECT_C.exe\n\n[PLACEHOLDER] AI/ML Data Pipeline\n[PLACEHOLDER] Tech: Python, TensorFlow, Apache Kafka\n[PLACEHOLDER] Status: PRODUCTION\n[PLACEHOLDER] Data processed: 10TB+\n\n[PLACEHOLDER] Accuracy: 94%\n[PLACEHOLDER] Latency: <100ms",
+            project1: "VIRTUAL_FITTING_ROOM.exe\n\nMachine Learning Senior Design Project\nTech: Machine Learning, 3D Modeling, Computer Vision\nStatus: COMPLETED\nDuration: Sep 2023 - May 2024\n\nImplemented ML algorithm to measure facial features by adapting pre-existing models. Created accurate 3D models resembling users. Planned sprints using Agile development methodology.\n\nImpact: Advanced facial recognition technology",
+            project2: "VSCODE_SECURITY.exe\n\nVulnerability Detection Research\nTech: Python, Security Analysis, Automated Testing\nStatus: DEPLOYED\nDuration: Jan 2023 - May 2023\n\nDeveloped automation tool analyzing 250+ VS Code extensions. Identified vulnerable extensions using automated Python scripts. Found path traversal and zip slip vulnerabilities.\n\nImpact: Protected 750K+ users from security threats",
+            project3: "PDF_ANALYZER.exe\n\nFull-Stack Web Application\nTech: Flask, Python, SQL, CI/CD, Multithreading\nStatus: DEPLOYED\nDuration: Jan 2023 - May 2023\n\nDesigned web app allowing users to upload PDFs, extract text, and analyze content. Integrated third-party APIs for web search. Features text extraction, sentiment analysis, and search functionality.\n\nPerformance: Improved processing speed via multithreading",
             
             // Work Experience
-            work1: "[PLACEHOLDER] COMPANY_A.log\n\n[PLACEHOLDER] Software Engineer\n[PLACEHOLDER] Duration: 2022-2024\n[PLACEHOLDER] Team Size: 8 developers\n\n[PLACEHOLDER] Projects: Microservices architecture\n[PLACEHOLDER] Tech: Java, Spring Boot, Kubernetes\n[PLACEHOLDER] Achievements: 40% performance improvement",
-            work2: "[PLACEHOLDER] COMPANY_B.log\n\n[PLACEHOLDER] Full-Stack Developer\n[PLACEHOLDER] Duration: 2020-2022\n[PLACEHOLDER] Team Size: 5 developers\n\n[PLACEHOLDER] Projects: E-commerce platform\n[PLACEHOLDER] Tech: React, Python, AWS\n[PLACEHOLDER] Achievements: Led frontend redesign",
-            work3: "[PLACEHOLDER] COMPANY_C.log\n\n[PLACEHOLDER] Junior Developer\n[PLACEHOLDER] Duration: 2019-2020\n[PLACEHOLDER] Team Size: 12 developers\n\n[PLACEHOLDER] Projects: Legacy system migration\n[PLACEHOLDER] Tech: JavaScript, PHP, MySQL\n[PLACEHOLDER] Achievements: Reduced load times by 60%",
+            work1: "PRICEWATERHOUSECOOPERS.log\n\nCybersecurity Consulting Associate\nDuration: Aug 2024 - Present\nLocation: Boston, MA\n\nDesigned, implemented and managed Identity Access Management (IAM) solutions using SailPoint for critical business and data protection challenges.\nTech: SailPoint, IAM, Cloud Security\nAchievements: Completed IAM and Cloud Security training modules",
+            work2: "PRICEWATERHOUSECOOPERS_INTERN.log\n\nCybersecurity Consulting Intern\nDuration: Jun 2023 - Aug 2023\nLocation: Boston, MA\n\nImplemented IAM solutions using Okta. Integrated applications using SAML and OIDC. Developed Android app using Okta Verify SDK and Firebase Cloud Messaging.\nTech: Okta, SAML, OIDC, Android SDK, Firebase, REST APIs\nAchievements: Secure authentication flows and role-based access",
+            work3: "BOSTON_UNIVERSITY_TA.log\n\nTeaching Assistant - Algorithms & Data Structures\nDuration: Jan 2023 - May 2023\nLocation: Boston University\n\nGuided 60+ students through problem-solving sessions and office hours. Created automated grading system using Docker containers.\nTech: Python, C++, Docker, Teaching\nAchievements: Streamlined grading process for coding assignments",
             
             // Certifications
-            cert1: "[PLACEHOLDER] AWS_CERT.credential\n\n[PLACEHOLDER] AWS Solutions Architect Associate\n[PLACEHOLDER] Issued: 2023\n[PLACEHOLDER] Valid until: 2026\n[PLACEHOLDER] Score: 850/1000\n\n[PLACEHOLDER] Skills: EC2, S3, RDS, Lambda\n[PLACEHOLDER] Projects: 15+ AWS deployments",
-            cert2: "[PLACEHOLDER] CLOUD_CERT.credential\n\n[PLACEHOLDER] Google Cloud Professional\n[PLACEHOLDER] Issued: 2023\n[PLACEHOLDER] Valid until: 2025\n[PLACEHOLDER] Score: 92%\n\n[PLACEHOLDER] Skills: GKE, BigQuery, Cloud Functions\n[PLACEHOLDER] Projects: Multi-cloud architecture",
-            cert3: "[PLACEHOLDER] DEV_CERT.credential\n\n[PLACEHOLDER] Kubernetes Administrator\n[PLACEHOLDER] Issued: 2022\n[PLACEHOLDER] Valid until: 2025\n[PLACEHOLDER] Score: 88%\n\n[PLACEHOLDER] Skills: Pod management, networking\n[PLACEHOLDER] Clusters managed: 20+",
+            cert1: "BOSTON_UNIVERSITY.credential\n\nBachelor of Science in Computer Engineering\nIssued: May 2024\nGPA: 3.95/4.0\nConcentration: Machine Learning\n\nHonors: Trustee Scholar (Top 20 of 16,000)\nDean's List all semesters, Summa Cum Laude\nActivities: Tau Beta Pi Secretary, BU Cricket Treasurer",
+            cert2: "ACADEMIC_COURSEWORK.credential\n\nRelevant Technical Coursework\nCompleted: 2020-2024\nInstitution: Boston University\n\nCore Subjects: Software Engineering, Machine Learning\nAdvanced: Applied Algorithms & Data Structures\nSpecialized: Logic Design, Reinforcement Learning\nSecurity: Cybersecurity, Computational Linear Algebra",
+            cert3: "RESEARCH_EXPERIENCE.credential\n\nResearch Assistant - IC Systems Lab\nDuration: Feb 2022 - May 2022\nInstitution: Boston University\n\nProject: Software-based accelerator for homomorphic encryption\nTech: Microsoft SEAL library, Machine Learning\nAchievements: Trained logistic regression on encrypted data\nFocus: Hardware performance testing and optimization",
             
-            // Content sections
-            blog: "[PLACEHOLDER] BLOG_POSTS.log streaming...\n\n[PLACEHOLDER] [2024] Understanding System Design\n[PLACEHOLDER] [2024] Database Optimization Techniques\n[PLACEHOLDER] [2024] Modern JavaScript Patterns\n[PLACEHOLDER] [2023] Building Scalable APIs\n\n[PLACEHOLDER] Total Posts: 47\n[PLACEHOLDER] Total Views: 25,847\n[PLACEHOLDER] Status: REGULARLY_UPDATED",
-            skills: "[PLACEHOLDER] SKILLS.matrix loaded...\n\n[PLACEHOLDER] Programming: JavaScript, Python, Java\n[PLACEHOLDER] Frameworks: React, Node.js, Spring\n[PLACEHOLDER] Databases: PostgreSQL, MongoDB\n[PLACEHOLDER] Cloud: AWS, GCP, Azure\n[PLACEHOLDER] DevOps: Docker, Kubernetes, CI/CD\n\n[PLACEHOLDER] Level: ADVANCED\n[PLACEHOLDER] Years: 5+ experience"
+            // New project node
+            project4: "AI_DRIVING.exe\n\nNeural Network-based Driving System\nTech: Neural Networks, Reinforcement Learning, Deep Q-learning\nStatus: COMPLETED\nDuration: Sep 2022 - Dec 2022\n\nDeveloped and implemented neural network driving system for PyTuxKart using reinforcement learning techniques. Achieved fastest timing in class.\n\nPerformance: Enhanced kart control and performance",
+            
+            // New work nodes
+            work4: "BU_TUTOR.log\n\nTutor - College of Engineering\nDuration: Sep 2022 - Dec 2022\nLocation: Boston University\n\nCoached and mentored engineering students in 15+ freshman to junior level courses. Provided 80+ hours of tutoring in Multivariate Calculus, Differential Equations, and Statistics.\n\nTech: Mathematics, Tutoring, Mentorship\nImpact: Supported student success across multiple disciplines",
+            
+            work5: "BU_RESEARCH.log\n\nResearch Assistant - IC Systems Lab\nDuration: Feb 2022 - May 2022\nLocation: Boston University\n\nCollaborated on software-based accelerator for homomorphic encryption. Trained logistic regression model on encrypted input data using Microsoft SEAL library.\n\nTech: Microsoft SEAL, Homomorphic Encryption, ML\nAchievements: Hardware performance testing and optimization",
+            
+            // Education nodes
+            edu1: "BU_DEGREE.credential\n\nBachelor of Science in Computer Engineering\nGraduated: May 2024\nGPA: 3.95/4.0\nConcentration: Machine Learning\n\nComprehensive study of computer systems, algorithms, software engineering, and machine learning techniques. Strong foundation in hardware and software computing aspects.\n\nStatus: COMPLETED_WITH_HONORS",
+            
+            edu2: "TRUSTEE_SCHOLAR.credential\n\nTrustee Scholar Merit Award\nAwarded: 2020-2024\nRank: Top 20 of 16,000 students\nValue: Full tuition scholarship\n\nExceptional academic merit scholarship awarded to highest-achieving incoming students. Maintained throughout all four years of study.\n\nAchievement: EXCEPTIONAL_ACADEMIC_PERFORMANCE",
+            
+            edu3: "LEADERSHIP.credential\n\nStudent Leadership Positions\nActive: 2022-2023\nOrganizations: Multiple\n\nSecretary of Tau Beta Pi Engineering Honor Society (2023). Treasurer of BU Cricket Team (2022). Active member of IEEE and Engineers without Borders.\n\nSkills: Leadership, Organization, Community Service",
+            
+            // Technical skill nodes
+            tech1: "IAM_SECURITY.matrix\n\nIdentity Access Management Expertise\nLevel: PROFESSIONAL\nExperience: 2+ years\n\nSpecialized in SailPoint and Okta implementations. Expert in SAML, OIDC, role-based access control, and authentication flows. Android SDK integration with Firebase.\n\nCurrent Focus: Critical business data protection",
+            
+            tech2: "ML_AI.matrix\n\nMachine Learning & AI Expertise\nLevel: ADVANCED\nExperience: 4+ years\n\nExpertise in PyTorch, TensorFlow, neural networks, reinforcement learning, computer vision. Applied ML in facial recognition, driving systems, and encrypted data processing.\n\nSpecializations: Deep learning, computer vision, RL",
+            
+            tech3: "PROGRAMMING.matrix\n\nProgramming Languages Proficiency\nLevel: EXPERT\nExperience: 5+ years\n\nPrimary: Python, C++, C, JavaScript, Kotlin, MATLAB\nFrameworks: Flask, Docker, Firebase, Git, webRTC\nHardware: Arduino, Verilog, Unity, Make\n\nStrength: Full-stack development and system programming",
+            
+            // Personal nodes
+            personal1: "INTERESTS.profile\n\nPersonal Interests & Hobbies\nActive Pursuits: Sports, Technology, Literature\n\nSports: Basketball, Cricket (BU Cricket Team Treasurer)\nAnalytics: NBA, NFL, IPL statistical analysis\nTechnology: Science Fiction, Hackathons\nAcademic: Mathematics, emerging technologies\n\nPhilosophy: Combining analytical thinking with competitive sports",
+            
+            personal2: "ACHIEVEMENTS.profile\n\nAcademic & Personal Achievements\nRecognition Level: EXCEPTIONAL\n\nAcademic: Dean's List (all semesters), Summa Cum Laude\nScholarship: Trustee Scholar (top 20 of 16,000)\nLeadership: Tau Beta Pi Secretary, Cricket Treasurer\nImpact: Teaching 140+ hours, protecting 750K+ users\n\nStatus: CONTINUOUSLY_ACHIEVING_EXCELLENCE",
+            
+            // Content sections (keep existing)
+            blog: "ADDITIONAL_EXPERIENCE.log streaming...\n\n[2022] Tutor - College of Engineering (80+ hours)\n[2022] Research - Homomorphic Encryption\n[2021] Software Engineering Intern - Krenai\n[2020] AI Driving - PyTuxKart Neural Networks\n\nTotal Experience: 5+ diverse roles\nSkills Developed: Teaching, Research, Development\nStatus: CONTINUOUSLY_EXPANDING",
+            skills: "SKILLS.matrix loaded...\n\nProgramming: Python, C++, C, JavaScript, Kotlin, MATLAB\nSecurity: SailPoint, Okta, Ping, SAML, OIDC\nML/AI: PyTorch, TensorFlow, Neural Networks\nDevelopment: Flask, Docker, Firebase, Git, webRTC\nHardware: Arduino, Verilog, Unity, Make\n\nExpertise Level: Professional (IAM/Security)\nYears Active: 4+ years intensive development"
         };
 
         // 3D Graph variables
@@ -1328,8 +1378,9 @@
                 core: 0xffffff,
                 project: 0x00d4ff,
                 work: 0xff6b35,
-                cert: 0x4ecdc4,
-                content: 0xffe66d
+                edu: 0x4ecdc4,
+                tech: 0xffe66d,
+                personal: 0xff9ff3
             };
             
             // Convert 2D positions to 3D
@@ -1753,7 +1804,12 @@
             document.querySelectorAll('.menu-item').forEach(item => {
                 item.classList.remove('active');
             });
-            document.querySelector(`[data-section="${sectionId}"]`).classList.add('active');
+            
+            // Only update menu if corresponding menu item exists
+            const menuItem = document.querySelector(`[data-section="${sectionId}"]`);
+            if (menuItem) {
+                menuItem.classList.add('active');
+            }
 
             // Reset all nodes and links
             nodeObjects.forEach(obj => {
@@ -1911,10 +1967,11 @@
         // Show category summary for grouped sections
         function showCategorySummary(category, sectionId) {
             const categorySummaries = {
-                project: "[PLACEHOLDER] PROJECTS.directory accessed...\n\n[PLACEHOLDER] Active Projects: 3\n[PLACEHOLDER] > PROJECT_A: Full-Stack Web App [DEPLOYED]\n[PLACEHOLDER] > PROJECT_B: Mobile Application [PUBLISHED]\n[PLACEHOLDER] > PROJECT_C: AI/ML Pipeline [PRODUCTION]\n\n[PLACEHOLDER] Total commits: 2,847\n[PLACEHOLDER] Repositories: 15\n[PLACEHOLDER] Languages: JavaScript, Python, Java\n\n[PLACEHOLDER] Click individual project nodes for details.",
-                work: "[PLACEHOLDER] WORK_EXPERIENCE.log loaded...\n\n[PLACEHOLDER] Total Experience: 5+ years\n[PLACEHOLDER] > COMPANY_A: Software Engineer (2022-2024)\n[PLACEHOLDER] > COMPANY_B: Full-Stack Developer (2020-2022)\n[PLACEHOLDER] > COMPANY_C: Junior Developer (2019-2020)\n\n[PLACEHOLDER] Technologies: 20+ frameworks\n[PLACEHOLDER] Team leadership: 3 projects\n[PLACEHOLDER] Performance improvements: 40%+ average\n\n[PLACEHOLDER] Click company nodes for details.",
-                cert: "[PLACEHOLDER] CERTIFICATIONS.vault accessed...\n\n[PLACEHOLDER] Active Certifications: 3\n[PLACEHOLDER] > AWS Solutions Architect Associate\n[PLACEHOLDER] > Google Cloud Professional\n[PLACEHOLDER] > Kubernetes Administrator\n\n[PLACEHOLDER] Total study hours: 500+\n[PLACEHOLDER] Passing rate: 92% average\n[PLACEHOLDER] Valid through: 2025-2026\n\n[PLACEHOLDER] Click individual certs for details.",
-                content: "[PLACEHOLDER] CONTENT.stream active...\n\n[PLACEHOLDER] > BLOG: 47 posts, 25K+ views\n[PLACEHOLDER] > SKILLS: Advanced level, 5+ years\n\n[PLACEHOLDER] Blog topics: System Design, DevOps, Web Dev\n[PLACEHOLDER] Core skills: JavaScript, Python, Cloud\n[PLACEHOLDER] Learning: Always exploring new tech\n\n[PLACEHOLDER] Click nodes for detailed breakdowns."
+                project: "PROJECTS.directory accessed...\n\nActive Projects: 4\n> Virtual Fitting Room: ML facial feature analysis [COMPLETED]\n> VS Code Security: Vulnerability detection tool [DEPLOYED]\n> PDF Analyzer: Flask web app with ML analysis [DEPLOYED]\n> AI Driving: Neural network PyTuxKart system [COMPLETED]\n\nSecurity Focus: 750K+ users protected\nTechnologies: Python, ML, Flask, TensorFlow\nResearch Impact: Published vulnerability findings\n\nNavigate to project pages for detailed specifications.",
+                work: "WORK_EXPERIENCE.log loaded...\n\nCurrent Role: Cybersecurity Consulting Associate @ PwC\n> Aug 2024 - Present: SailPoint IAM implementations\n> Jun 2023 - Aug 2023: Okta integration & SAML/OIDC\n> Academic: Teaching Assistant (60+ students)\n> Research: Homomorphic encryption (Feb-May 2022)\n> Tutoring: 80+ hours across 15+ courses\n\nSpecializations: Identity Access Management, Security\nTechnologies: SailPoint, Okta, Android SDK, Docker\nCareer Progression: Research → Teaching → Industry\n\nAccess individual role specifications for details.",
+                edu: "EDUCATION.vault accessed...\n\nPrimary Credential: B.S. Computer Engineering\n> Boston University | May 2024 | GPA: 3.95/4.0\n> Concentration: Machine Learning\n> Trustee Scholar: Top 20 of 16,000 students\n\nAcademic Honors: Dean's List (all semesters), Summa Cum Laude\nLeadership: Tau Beta Pi Secretary, BU Cricket Treasurer\nCoursework: ML, Algorithms, Cybersecurity, Reinforcement Learning\n\nAccess detailed academic records for specifications.",
+                tech: "TECHNICAL_SKILLS.matrix loaded...\n\nCore Competencies: 3 specialized domains\n> IAM/Security: SailPoint, Okta, SAML, OIDC [PROFESSIONAL]\n> ML/AI: PyTorch, TensorFlow, Neural Networks [ADVANCED]\n> Programming: Python, C++, JavaScript, Kotlin [EXPERT]\n\nFrameworks: Flask, Docker, Firebase, Git, webRTC\nHardware: Arduino, Verilog, Unity, Make\nExperience: 5+ years intensive development\n\nAccess individual skill matrices for proficiency details.",
+                personal: "PERSONAL.profile accessed...\n\nInterests & Achievements Integration\n> Sports: Basketball, Cricket (Team Treasurer)\n> Analytics: NBA, NFL, IPL statistical analysis\n> Academic: Dean's List, Summa Cum Laude\n> Leadership: Tau Beta Pi Secretary\n\nPhilosophy: Combining analytical thinking with competitive sports\nHobbies: Science Fiction, Hackathons, Mathematics\nImpact: Teaching 140+ hours, protecting 750K+ users\n\nAccess nodes for detailed interest and achievement profiles."
             };
             
             const content = categorySummaries[category] || sectionContent[sectionId] || `${sectionId.toUpperCase()}.exe loaded...\n\nContent loading...\n\nSTATUS: READY\nMODE: INTERACTIVE`;
