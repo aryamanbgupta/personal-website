@@ -797,7 +797,7 @@
 
         <div class="content-display" id="content-display">
             <div id="content-text">
-SYSTEM.init > Aryaman Bhavya Gupta | Computer Engineer\n\n> Boston University Graduate | GPA: 3.95/4.0\n> Current: Cybersecurity Consulting Associate @ PwC\n> Specialization: IAM Solutions & Machine Learning\n\nSTATUS: ONLINE | Navigate menu or interact with system map<span class="cursor">_</span>
+                <!-- Content will be populated by JavaScript -->
             </div>
         </div>
         
@@ -1353,6 +1353,7 @@ SYSTEM.init > Aryaman Bhavya Gupta | Computer Engineer\n\n> Boston University Gr
         let scene, camera, renderer, graph3D, nodeObjects = [], linkObjects = [];
         let rotationSpeed = 0.002;
         let selectedCategory = null;
+        let activeTypewriterTimeout = null;
         
         // Initialize the 3D graph
         function initGraph() {
@@ -1589,7 +1590,7 @@ SYSTEM.init > Aryaman Bhavya Gupta | Computer Engineer\n\n> Boston University Gr
                 '',
                 '// Initiating dissolution...',
                 'dissolve();',
-                '// Memory freed: ' + Math.floor(Math.random() * 1000) + 'KB',
+                '// Memory freed: 512KB',
                 '// Status: TRANSITIONING',
                 '// Target: ' + (element.querySelector('.menu-title') ? 'MENU_SYSTEM' : 'AVATAR_DISPLAY'),
                 '// Protocol: MATRIX_SHIFT'
@@ -1860,6 +1861,12 @@ SYSTEM.init > Aryaman Bhavya Gupta | Computer Engineer\n\n> Boston University Gr
             const display = document.getElementById('content-display');
             const textEl = document.getElementById('content-text');
             
+            // Cancel any existing typewriter effect
+            if (activeTypewriterTimeout) {
+                clearTimeout(activeTypewriterTimeout);
+                activeTypewriterTimeout = null;
+            }
+            
             display.classList.add('active');
             
             // Typewriter effect
@@ -1869,9 +1876,10 @@ SYSTEM.init > Aryaman Bhavya Gupta | Computer Engineer\n\n> Boston University Gr
                 if (i < content.length) {
                     textEl.innerHTML += content.charAt(i);
                     i++;
-                    setTimeout(typeWriter, 30);
+                    activeTypewriterTimeout = setTimeout(typeWriter, 30);
                 } else {
                     textEl.innerHTML += '<span class="cursor">_</span>';
+                    activeTypewriterTimeout = null; // Clear when done
                 }
             };
             typeWriter();
@@ -1890,16 +1898,10 @@ SYSTEM.init > Aryaman Bhavya Gupta | Computer Engineer\n\n> Boston University Gr
         }
 
 
-        // Clock
+        // Clock (removed - no current-time element exists)
         function updateClock() {
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString('en-US', { 
-                hour12: false,
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            });
-            document.getElementById('current-time').textContent = timeStr;
+            // Clock functionality removed - no current-time element in HTML
+            return;
         }
 
         // 3D Graph utility functions
@@ -1983,8 +1985,7 @@ SYSTEM.init > Aryaman Bhavya Gupta | Computer Engineer\n\n> Boston University Gr
             initGraph();
             initMenu();
             selectSection('about', 'core');
-            updateClock();
-            setInterval(updateClock, 1000);
+            // Clock functionality removed - no intervals needed
             
             // Handle window resize for responsive graph
             let resizeTimeout;
