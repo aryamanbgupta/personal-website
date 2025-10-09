@@ -776,6 +776,7 @@
                     <div class="menu-item" data-section="contact" data-category="core">> CONTACT</div>
                     <div class="menu-item" data-section="work" data-category="work">> WORK_EXPERIENCE</div>
                     <div class="menu-item" data-section="skills" data-category="content">> SKILLS</div>
+                    <div class="menu-item" data-section="bookshelf" data-category="reading">> BOOKSHELF</div>
                 </div>
             </div>
 
@@ -1208,8 +1209,43 @@
                 </div>
             </div>
         </div>
-        
-        
+
+        <!-- Bookshelf Page -->
+        <div class="page-container" id="bookshelf-page">
+            <div class="page-header">
+                <div class="page-title">BOOKSHELF.LOG</div>
+                <button class="back-button" onclick="goBack()">&lt; BACK_TO_MAIN</button>
+            </div>
+            <div class="scrollable-content">
+                <div class="cards-container">
+                    <div class="card">
+                        <div class="card-title">The Beginning of Infinity</div>
+                        <div class="card-meta">David Deutsch</div>
+                        <div class="card-description">
+                            It's a dense book covering a variety of topics where David is building a very interesting argument from scratch. He talks about scientific philosophy and the nature of reality building his arguments from first principles.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">The Bhagavad Gita</div>
+                        <div class="card-meta">Eknath Easwaran</div>
+                        <div class="card-description">
+                            A translation with a focus on the philosophical aspects of the book. Easwaran has very succinctly described the ideas of the Gita in a way that is easy to understand.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">A Fire Upon the Deep</div>
+                        <div class="card-meta">Vernor Vinge</div>
+                        <div class="card-description">
+                            A sci-fi book that I've just started and throws you immediately into the world of the book where there are cultures and species that are completely different from what you have experienced and you piece together the world with the context as it goes on.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
         <!-- Matrix Animation Overlay -->
         <div class="matrix-overlay" id="matrix-overlay"></div>
     </div>
@@ -1248,7 +1284,10 @@
                 
                 // Personal
                 { id: "personal1", name: "INTERESTS", category: "personal", x: 50, y: 400 },
-                { id: "personal2", name: "ACHIEVEMENTS", category: "personal", x: 350, y: 400 }
+                { id: "personal2", name: "ACHIEVEMENTS", category: "personal", x: 350, y: 400 },
+
+                // Reading
+                { id: "bookshelf", name: "BOOKSHELF", category: "reading", x: 75, y: 425 }
             ],
             links: [
                 // Core hub connections
@@ -1256,6 +1295,7 @@
                 { source: "about", target: "edu1" },
                 { source: "about", target: "work1" },
                 { source: "about", target: "project1" },
+                { source: "about", target: "bookshelf" },
                 
                 // Career progression path
                 { source: "edu2", target: "edu1" },
@@ -1346,7 +1386,10 @@
             
             // Content sections (keep existing)
             blog: "ADDITIONAL_EXPERIENCE.log streaming...\n\n[2022] Tutor - College of Engineering (80+ hours)\n[2022] Research - Homomorphic Encryption\n[2021] Software Engineering Intern - Krenai\n[2020] AI Driving - PyTuxKart Neural Networks\n\nTotal Experience: 5+ diverse roles\nSkills Developed: Teaching, Research, Development\nStatus: CONTINUOUSLY_EXPANDING",
-            skills: "SKILLS.matrix loaded...\n\nProgramming: Python, C++, C, JavaScript, Kotlin, MATLAB\nSecurity: SailPoint, Okta, Ping, SAML, OIDC\nML/AI: PyTorch, TensorFlow, Neural Networks\nDevelopment: Flask, Docker, Firebase, Git, webRTC\nHardware: Arduino, Verilog, Unity, Make\n\nExpertise Level: Professional (IAM/Security)\nYears Active: 4+ years intensive development"
+            skills: "SKILLS.matrix loaded...\n\nProgramming: Python, C++, C, JavaScript, Kotlin, MATLAB\nSecurity: SailPoint, Okta, Ping, SAML, OIDC\nML/AI: PyTorch, TensorFlow, Neural Networks\nDevelopment: Flask, Docker, Firebase, Git, webRTC\nHardware: Arduino, Verilog, Unity, Make\n\nExpertise Level: Professional (IAM/Security)\nYears Active: 4+ years intensive development",
+
+            // Reading
+            bookshelf: "BOOKSHELF.log loaded...\n\nCurrently Reading: 3 books\n\n> The Beginning of Infinity by David Deutsch\n  Scientific philosophy and the nature of reality\n  Building arguments from first principles\n\n> The Bhagavad Gita translated by Eknath Easwaran\n  Philosophical aspects and ancient wisdom\n  Clear and accessible interpretation\n\n> A Fire Upon the Deep by Vernor Vinge\n  Science fiction exploring alien cultures\n  Immersive world-building experience\n\nGenres: Philosophy, Science Fiction, Ancient Texts\nStatus: ACTIVELY_READING"
         };
 
         // 3D Graph variables
@@ -1381,7 +1424,8 @@
                 work: 0xff6b35,
                 edu: 0x4ecdc4,
                 tech: 0xffe66d,
-                personal: 0xff9ff3
+                personal: 0xff9ff3,
+                reading: 0x9d4edd
             };
             
             // Convert 2D positions to 3D
@@ -1973,9 +2017,10 @@
                 work: "WORK_EXPERIENCE.log loaded...\n\nCurrent Role: Cybersecurity Consulting Associate @ PwC\n> Aug 2024 - Present: SailPoint IAM implementations\n> Jun 2023 - Aug 2023: Okta integration & SAML/OIDC\n> Academic: Teaching Assistant (60+ students)\n> Research: Homomorphic encryption (Feb-May 2022)\n> Tutoring: 80+ hours across 15+ courses\n\nSpecializations: Identity Access Management, Security\nTechnologies: SailPoint, Okta, Android SDK, Docker\nCareer Progression: Research → Teaching → Industry\n\nAccess individual role specifications for details.",
                 edu: "EDUCATION.vault accessed...\n\nPrimary Credential: B.S. Computer Engineering\n> Boston University | May 2024 | GPA: 3.95/4.0\n> Concentration: Machine Learning\n> Trustee Scholar: Top 20 of 16,000 students\n\nAcademic Honors: Dean's List (all semesters), Summa Cum Laude\nLeadership: Tau Beta Pi Secretary, BU Cricket Treasurer\nCoursework: ML, Algorithms, Cybersecurity, Reinforcement Learning\n\nAccess detailed academic records for specifications.",
                 tech: "TECHNICAL_SKILLS.matrix loaded...\n\nCore Competencies: 3 specialized domains\n> IAM/Security: SailPoint, Okta, SAML, OIDC [PROFESSIONAL]\n> ML/AI: PyTorch, TensorFlow, Neural Networks [ADVANCED]\n> Programming: Python, C++, JavaScript, Kotlin [EXPERT]\n\nFrameworks: Flask, Docker, Firebase, Git, webRTC\nHardware: Arduino, Verilog, Unity, Make\nExperience: 5+ years intensive development\n\nAccess individual skill matrices for proficiency details.",
-                personal: "PERSONAL.profile accessed...\n\nInterests & Achievements Integration\n> Sports: Basketball, Cricket (Team Treasurer)\n> Analytics: NBA, NFL, IPL statistical analysis\n> Academic: Dean's List, Summa Cum Laude\n> Leadership: Tau Beta Pi Secretary\n\nPhilosophy: Combining analytical thinking with competitive sports\nHobbies: Science Fiction, Hackathons, Mathematics\nImpact: Teaching 140+ hours, protecting 750K+ users\n\nAccess nodes for detailed interest and achievement profiles."
+                personal: "PERSONAL.profile accessed...\n\nInterests & Achievements Integration\n> Sports: Basketball, Cricket (Team Treasurer)\n> Analytics: NBA, NFL, IPL statistical analysis\n> Academic: Dean's List, Summa Cum Laude\n> Leadership: Tau Beta Pi Secretary\n\nPhilosophy: Combining analytical thinking with competitive sports\nHobbies: Science Fiction, Hackathons, Mathematics\nImpact: Teaching 140+ hours, protecting 750K+ users\n\nAccess nodes for detailed interest and achievement profiles.",
+                reading: "BOOKSHELF.archive accessed...\n\nCurrent Reading Collection: 3 books\n> The Beginning of Infinity: Scientific philosophy & first principles\n> The Bhagavad Gita: Ancient wisdom & philosophical insights\n> A Fire Upon the Deep: Sci-fi & alien cultures exploration\n\nGenres: Philosophy, Science Fiction, Ancient Texts\nReading Focus: Deep thinking, world-building, foundational arguments\nStatus: ACTIVELY_READING\n\nNavigate to bookshelf page for detailed book information."
             };
-            
+
             const content = categorySummaries[category] || sectionContent[sectionId] || `${sectionId.toUpperCase()}.exe loaded...\n\nContent loading...\n\nSTATUS: READY\nMODE: INTERACTIVE`;
             showContent(content);
         }
