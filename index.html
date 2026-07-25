@@ -222,6 +222,235 @@
             transition: var(--transition-smooth);
         }
 
+        /* ============================================================
+           SYSTEM MAP — tethered node cards + firefly HUD
+           ============================================================ */
+
+        .card-tethers {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 6;
+            overflow: visible;
+        }
+
+        .node-cards {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 7;
+        }
+
+        .node-card {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 164px;
+            opacity: 0;
+            transform: translate3d(-999px, -999px, 0) scale(0.92);
+            transform-origin: center center;
+            will-change: transform, opacity;
+            border-radius: 10px;
+            overflow: hidden;
+            background: rgba(5, 11, 17, 0.74);
+            backdrop-filter: blur(14px) saturate(135%);
+            -webkit-backdrop-filter: blur(14px) saturate(135%);
+            border: 1px solid rgba(0, 212, 255, 0.26);
+            box-shadow:
+                0 12px 34px rgba(0, 0, 0, 0.55),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            transition: opacity 380ms ease, border-color 380ms ease, box-shadow 380ms ease;
+        }
+
+        .node-card.is-lit {
+            border-color: rgba(255, 179, 71, 0.5);
+            box-shadow:
+                0 12px 38px rgba(0, 0, 0, 0.6),
+                0 0 26px rgba(255, 179, 71, 0.16),
+                inset 0 1px 0 rgba(255, 255, 255, 0.07);
+        }
+
+        .node-card-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 10px;
+            background: rgba(0, 212, 255, 0.05);
+            border-bottom: 1px solid rgba(0, 212, 255, 0.14);
+        }
+
+        .node-card-dots {
+            display: flex;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .node-card-dots i {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(0, 212, 255, 0.32);
+        }
+
+        .node-card.is-lit .node-card-dots i:first-child {
+            background: rgba(255, 179, 71, 0.85);
+        }
+
+        .node-card-file {
+            font-size: 9.5px;
+            letter-spacing: 1px;
+            color: var(--primary);
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .node-card-body {
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .node-card-kicker {
+            font-size: 8.5px;
+            letter-spacing: 1.4px;
+            color: rgba(255, 255, 255, 0.42);
+            font-weight: 500;
+        }
+
+        .node-card-meter {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .node-card-track {
+            height: 4px;
+            border-radius: 2px;
+            background: rgba(255, 255, 255, 0.07);
+            overflow: hidden;
+        }
+
+        .node-card-fill {
+            display: block;
+            height: 100%;
+            width: 0;
+            border-radius: 2px;
+            background: linear-gradient(90deg, var(--primary), #ffb347);
+            box-shadow: 0 0 10px rgba(255, 179, 71, 0.4);
+            transition: width 700ms cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .node-card-meter em {
+            font-style: normal;
+            font-size: 10px;
+            color: #ffb347;
+            letter-spacing: 0.4px;
+        }
+
+        .node-card-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .node-card-stat {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 10px;
+            font-size: 10px;
+        }
+
+        .node-card-stat span:first-child {
+            color: rgba(255, 255, 255, 0.5);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .node-card-stat span:last-child {
+            color: rgba(255, 255, 255, 0.88);
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+
+        .node-card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .node-card-tags b {
+            font-size: 8.5px;
+            font-weight: 500;
+            letter-spacing: 0.4px;
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: rgba(0, 212, 255, 0.85);
+            background: rgba(0, 212, 255, 0.08);
+            border: 1px solid rgba(0, 212, 255, 0.16);
+        }
+
+        .node-card-link {
+            font-size: 9.5px;
+            color: #ffb347;
+            letter-spacing: 0.4px;
+            opacity: 0.9;
+        }
+
+        /* Drag affordance */
+        .globe-hint {
+            position: absolute;
+            bottom: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 8;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 9px;
+            letter-spacing: 2.4px;
+            color: rgba(255, 255, 255, 0.3);
+            pointer-events: none;
+            transition: opacity 600ms ease;
+            animation: hintBreathe 3.4s ease-in-out infinite;
+        }
+
+        .globe-hint.is-hidden {
+            opacity: 0;
+        }
+
+        @keyframes hintBreathe {
+            0%, 100% { opacity: 0.42; }
+            50%      { opacity: 0.78; }
+        }
+
+        /* Cards need room — drop them on small canvases */
+        @media (max-width: 900px) {
+            .node-cards,
+            .card-tethers {
+                display: none;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .globe-hint {
+                animation: none;
+            }
+            .node-card {
+                transition: opacity 200ms linear;
+            }
+        }
+
         /* Enhanced Right Panel / Avatar */
         .right-panel {
             display: flex;
@@ -1272,6 +1501,9 @@
             <div class="graph-container">
                 <div class="graph-title">SYSTEM MAP</div>
                 <div id="graph"></div>
+                <svg class="card-tethers" id="card-tethers" aria-hidden="true"></svg>
+                <div class="node-cards" id="node-cards" aria-hidden="true"></div>
+                <div class="globe-hint" id="globe-hint">&#8592;&nbsp; DRAG &nbsp;&#8594;</div>
             </div>
 
             <div class="right-panel dissolution-target">
@@ -1920,6 +2152,147 @@
         const DAMPING = 0.92;
         const SENSITIVITY = 0.005;
 
+        // ============================================================
+        // FIREFLY FIELD — cursor-driven bloom that sweeps the globe
+        // ============================================================
+        let fireflies = null, fireflyUniforms = null;
+        const BLOOM_TAPS = 3;                       // trailing wake points
+        const BLOOM_LERP = [0.24, 0.11, 0.06];      // per-tap follow speed
+        const BLOOM_WEIGHT = [1.0, 0.55, 0.3];      // per-tap brightness
+        const BLOOM_RADIUS = [1.45, 1.05, 0.75];    // per-tap reach (world units)
+        const bloomWorld = new THREE.Vector3(0, 0, GLOBE_RADIUS);
+        const bloomTrail = [];                      // world-space wake, index 0 = newest
+        const pointerNDC = new THREE.Vector2(0, 0);
+        let pointerInside = false;
+        let bloomStrength = 0;                      // eased 0..1 presence
+        const bloomSphere = new THREE.Sphere(new THREE.Vector3(0, 0, 0), GLOBE_RADIUS + 0.12);
+        const bloomRaycaster = new THREE.Raycaster();
+        const ORIGIN = new THREE.Vector3(0, 0, 0);
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        // ============================================================
+        // TETHERED NODE CARDS — floating previews wired to their node
+        // ============================================================
+        let cardLayer = null, tetherLayer = null, globeHint = null;
+        let cardsEnabled = false;
+        const cardEntries = new Map();              // nodeId -> { el, line, dot, opacity, height }
+        let hoveredCardId = null;
+        const FEATURED_POOL = ['project5', 'work1', 'tech2', 'bookshelf', 'edu1', 'project2'];
+        const FEATURED_SLOTS = 2;
+        const FEATURE_SWAP_MS = 6500;
+        let featuredIds = [];
+        let featuredCursor = 0;
+        let lastFeatureSwap = 0;
+        // The graph column is only ~500px wide, so cards pin to the canvas edges
+        // and reach their node with a long tether rather than floating beside it.
+        const CARD_WIDTH = 164;
+        const CARD_EDGE = 6;
+        const CARD_GAP = 10;
+        const MAX_PER_SIDE = 2;
+        const CARDS_MIN_WIDTH = 400;
+
+        // Card content per node. `meter` renders a progress bar, `stats` a
+        // label/value ledger, `tags` the chip row — all optional.
+        const nodeCards = {
+            about: {
+                file: 'ABOUT_ME.exe', kicker: 'SECURITY / ML',
+                stats: [['LOCATION', 'Boston, MA'], ['STATUS', 'ACTIVE']],
+                tags: ['IAM', 'PyTorch']
+            },
+            contact: {
+                file: 'CONTACT.sys', kicker: 'OPEN TO WORK',
+                stats: [['EMAIL', 'aryaman@bu.edu'], ['REPLY', '< 24h']]
+            },
+            project5: {
+                file: 'CRICKET_ML.exe', kicker: 'MONTE CARLO / T20',
+                meter: { value: 0.78, label: 'edge vs bookmakers' },
+                tags: ['PyTorch', 'Transformers', 'XGBoost'],
+                link: 'cricket.aryaman.ink'
+            },
+            project1: {
+                file: 'VIRTUAL_FITTING.exe', kicker: 'COMPUTER VISION',
+                stats: [['ROLE', 'ML Engineer'], ['TERM', '2023 - 24']],
+                tags: ['Facial Modeling', 'Python']
+            },
+            project2: {
+                file: 'VSCODE_SECURITY.exe', kicker: 'VULN RESEARCH',
+                meter: { value: 0.92, label: '750K+ users protected' },
+                tags: ['Static Analysis', 'Node']
+            },
+            project3: {
+                file: 'PDF_ANALYZER.exe', kicker: 'FULL-STACK / FLASK',
+                stats: [['STATUS', 'DEPLOYED'], ['SPEEDUP', 'Threaded']],
+                tags: ['Flask', 'SQL', 'CI/CD']
+            },
+            project4: {
+                file: 'AI_DRIVING.exe', kicker: 'DEEP Q-LEARNING',
+                meter: { value: 1.0, label: 'fastest lap in class' },
+                tags: ['RL', 'PyTuxKart']
+            },
+            work1: {
+                file: 'PWC_CURRENT.log', kicker: 'SECURITY ENGINEER',
+                meter: { value: 0.6, label: '-40% delivery time' },
+                tags: ['SailPoint', 'Delinea', 'AWS']
+            },
+            work2: {
+                file: 'PWC_INTERN.log', kicker: 'CYBERSEC INTERN',
+                stats: [['TERM', 'Jun - Aug 2023']],
+                tags: ['Okta', 'SAML', 'OIDC']
+            },
+            work3: {
+                file: 'BU_TEACHING.log', kicker: 'TA / ALGORITHMS',
+                stats: [['STUDENTS', '60+'], ['BUILT', 'Docker CI']]
+            },
+            work4: {
+                file: 'BU_TUTOR.log', kicker: 'ENGINEERING TUTOR',
+                stats: [['HOURS', '80+'], ['COURSES', '15+']]
+            },
+            work5: {
+                file: 'BU_RESEARCH.log', kicker: 'IC SYSTEMS LAB',
+                stats: [['FOCUS', 'Encrypted ML']],
+                tags: ['Microsoft SEAL', 'Homomorphic']
+            },
+            edu1: {
+                file: 'BU_DEGREE.cred', kicker: 'B.S. COMPUTER ENG',
+                meter: { value: 0.9875, label: 'GPA 3.95 / 4.0' },
+                tags: ['ML Concentration', 'Summa Cum Laude']
+            },
+            edu2: {
+                file: 'TRUSTEE_SCHOLAR.cred', kicker: 'MERIT SCHOLARSHIP',
+                stats: [['RANK', 'Top 20 / 16k'], ['HELD', '2020 - 24']]
+            },
+            edu3: {
+                file: 'LEADERSHIP.cred', kicker: 'SOCIETIES & TEAMS',
+                stats: [['TAU BETA PI', 'Secretary'], ['BU CRICKET', 'Treasurer']]
+            },
+            tech1: {
+                file: 'IAM_SECURITY.matrix', kicker: 'IDENTITY & ACCESS',
+                meter: { value: 0.95, label: 'PROFESSIONAL / 3+ yrs' },
+                tags: ['SAML', 'OIDC', 'RBAC', 'Zero Trust']
+            },
+            tech2: {
+                file: 'ML_AI.matrix', kicker: 'MACHINE LEARNING',
+                meter: { value: 0.88, label: 'ADVANCED / 5+ yrs' },
+                tags: ['PyTorch', 'Transformers', 'RL']
+            },
+            tech3: {
+                file: 'PROGRAMMING.matrix', kicker: 'LANGUAGES',
+                stats: [['Python', 'EXPERT'], ['C++', 'ADVANCED'], ['JavaScript', 'ADVANCED']]
+            },
+            personal1: {
+                file: 'INTERESTS.profile', kicker: 'OFF THE CLOCK',
+                tags: ['Cricket', 'Basketball', 'NFL', 'F1', 'Chess']
+            },
+            personal2: {
+                file: 'ACHIEVEMENTS.profile', kicker: 'HONORS',
+                stats: [["Dean's List", 'ALL SEM'], ['Latin Honors', 'SUMMA']]
+            },
+            bookshelf: {
+                file: 'BOOKSHELF.dir', kicker: 'CURRENTLY READING',
+                tags: ['Beginning of Infinity', 'Bhagavad Gita', 'A Fire Upon the Deep']
+            }
+        };
+
         // Initialize the 3D graph
         function initGraph() {
             const container = document.getElementById('graph');
@@ -1998,10 +2371,24 @@
                 pulseRing.position.copy(sphere.position);
                 pulseRing.lookAt(0, 0, 0);
 
+                // Bloom halo — driven ONLY by the firefly cursor, so it never
+                // collides with the opacity/scale that highlighting owns
+                const haloGeometry = new THREE.SphereGeometry(0.30, 16, 16);
+                const haloMaterial = new THREE.MeshBasicMaterial({
+                    color: 0xffb347,
+                    transparent: true,
+                    opacity: 0,
+                    blending: THREE.AdditiveBlending,
+                    depthWrite: false
+                });
+                const bloomHalo = new THREE.Mesh(haloGeometry, haloMaterial);
+                bloomHalo.position.copy(sphere.position);
+
                 graph3D.add(sphere);
                 graph3D.add(glow);
                 graph3D.add(pulseRing);
-                nodeObjects.push({ sphere, glow, pulseRing, node, baseOpacity: 0.95 });
+                graph3D.add(bloomHalo);
+                nodeObjects.push({ sphere, glow, pulseRing, bloomHalo, node, baseOpacity: 0.95, proximity: 0 });
             });
 
             // Create curved links between nodes
@@ -2020,6 +2407,9 @@
             // Position camera
             camera.position.set(0, 0, 6);
             camera.lookAt(0, 0, 0);
+
+            // Build the floating card layer now that nodeObjects exist
+            initNodeCards();
 
             // Add mouse/touch interaction
             addGraphInteraction();
@@ -2097,37 +2487,439 @@
             }
         }
 
-        // Create ambient floating particles
+        // Create the firefly field: a dense layer hugging the globe surface plus a
+        // sparse outer drift. Each point idles dim and cyan; the cursor bloom
+        // (uBloom) swells it warm and white, like a hand through glowing flowers.
         function createAmbientParticles() {
-            const particleCount = 150;
-            const positions = new Float32Array(particleCount * 3);
-            const sizes = new Float32Array(particleCount);
+            const SURFACE_COUNT = 620;
+            const OUTER_COUNT = 280;
+            const total = SURFACE_COUNT + OUTER_COUNT;
 
-            for (let i = 0; i < particleCount; i++) {
+            const positions = new Float32Array(total * 3);
+            const seeds = new Float32Array(total);
+            const sizes = new Float32Array(total);
+
+            for (let i = 0; i < total; i++) {
+                const onSurface = i < SURFACE_COUNT;
+
+                // Uniform-on-sphere direction, then push out to the right shell
                 const theta = Math.random() * Math.PI * 2;
                 const phi = Math.acos(2 * Math.random() - 1);
-                const r = GLOBE_RADIUS + 0.3 + Math.random() * 1.5;
+                const r = onSurface
+                    ? GLOBE_RADIUS - 0.05 + Math.random() * 0.22
+                    : GLOBE_RADIUS + 0.35 + Math.pow(Math.random(), 1.7) * 1.9;
 
                 positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
                 positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
                 positions[i * 3 + 2] = r * Math.cos(phi);
-                sizes[i] = Math.random() * 2 + 1;
+
+                seeds[i] = Math.random();
+                // aSize is CSS pixels at the reference camera distance
+                sizes[i] = onSurface ? 1.3 + Math.random() * 1.4 : 0.9 + Math.random() * 1.0;
             }
 
-            const particleGeometry = new THREE.BufferGeometry();
-            particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-            particleGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+            const geometry = new THREE.BufferGeometry();
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('aSeed', new THREE.BufferAttribute(seeds, 1));
+            geometry.setAttribute('aSize', new THREE.BufferAttribute(sizes, 1));
 
-            const particleMaterial = new THREE.PointsMaterial({
-                color: 0x00d4ff,
-                size: 0.03,
+            bloomTrail.length = 0;
+            for (let i = 0; i < BLOOM_TAPS; i++) {
+                bloomTrail.push(new THREE.Vector3(0, 0, GLOBE_RADIUS));
+            }
+
+            fireflyUniforms = {
+                uTime: { value: 0 },
+                uPixelRatio: { value: Math.min(window.devicePixelRatio, 2) },
+                uCamDist: { value: 6.0 },
+                uDrift: { value: reduceMotion ? 0.0 : 1.0 },
+                uBloom: { value: bloomTrail.map(() => new THREE.Vector3(0, 0, 999)) },
+                uBloomStrength: { value: [0, 0, 0] },
+                uBloomRadius: { value: BLOOM_RADIUS.slice() },
+                uCool: { value: new THREE.Color(0x00d4ff) },
+                uWarm: { value: new THREE.Color(0xffb347) },
+                uHot: { value: new THREE.Color(0xfff2d0) }
+            };
+
+            const material = new THREE.ShaderMaterial({
+                uniforms: fireflyUniforms,
                 transparent: true,
-                opacity: 0.4,
-                blending: THREE.AdditiveBlending
+                depthWrite: false,
+                blending: THREE.AdditiveBlending,
+                vertexShader: `
+                    attribute float aSeed;
+                    attribute float aSize;
+
+                    uniform float uTime;
+                    uniform float uPixelRatio;
+                    uniform float uCamDist;
+                    uniform float uDrift;
+                    uniform vec3  uBloom[${BLOOM_TAPS}];
+                    uniform float uBloomStrength[${BLOOM_TAPS}];
+                    uniform float uBloomRadius[${BLOOM_TAPS}];
+
+                    varying float vGlow;
+                    varying float vTwinkle;
+
+                    void main() {
+                        vec3 pos = position;
+
+                        // Slow individual drift so the field never looks frozen
+                        float t = uTime * 0.22 + aSeed * 43.0;
+                        pos += vec3(sin(t), cos(t * 0.83), sin(t * 1.17)) * 0.055 * uDrift;
+
+                        // Strongest of the wake taps wins — gives a comet tail
+                        float glow = 0.0;
+                        for (int i = 0; i < ${BLOOM_TAPS}; i++) {
+                            float d = distance(pos, uBloom[i]);
+                            float p = 1.0 - smoothstep(0.0, uBloomRadius[i], d);
+                            glow = max(glow, pow(p, 1.7) * uBloomStrength[i]);
+                        }
+                        vGlow = glow;
+                        vTwinkle = 0.5 + 0.5 * sin(uTime * (0.9 + aSeed * 2.3) + aSeed * 57.0);
+
+                        vec4 mv = modelViewMatrix * vec4(pos, 1.0);
+                        float scale = 1.0 + glow * 3.6 + vTwinkle * 0.28;
+                        gl_PointSize = aSize * scale * uPixelRatio * (uCamDist / max(0.1, -mv.z));
+                        gl_Position = projectionMatrix * mv;
+                    }
+                `,
+                fragmentShader: `
+                    uniform vec3 uCool;
+                    uniform vec3 uWarm;
+                    uniform vec3 uHot;
+
+                    varying float vGlow;
+                    varying float vTwinkle;
+
+                    void main() {
+                        vec2 uv = gl_PointCoord - vec2(0.5);
+                        float d = length(uv);
+                        if (d > 0.5) discard;
+
+                        float halo = pow(1.0 - smoothstep(0.0, 0.5, d), 2.4);
+                        float core = 1.0 - smoothstep(0.0, 0.18, d);
+
+                        float g = clamp(vGlow, 0.0, 1.0);
+                        vec3 col = mix(uCool, uWarm, smoothstep(0.05, 0.55, g));
+                        col = mix(col, uHot, smoothstep(0.45, 1.0, g));
+
+                        float base = halo * (0.10 + vTwinkle * 0.09);
+                        float lit = halo * g * 0.75 + core * g * g * 0.95;
+                        float a = base + lit;
+                        if (a < 0.004) discard;
+
+                        gl_FragColor = vec4(col, a);
+                    }
+                `
             });
 
-            particles = new THREE.Points(particleGeometry, particleMaterial);
-            graph3D.add(particles);
+            fireflies = new THREE.Points(geometry, material);
+            fireflies.frustumCulled = false;
+            particles = fireflies; // keep legacy references working
+            graph3D.add(fireflies);
+        }
+
+        // Resolve the cursor to a point on the globe shell and advance the wake.
+        function updateFireflyBloom() {
+            if (!fireflies || !fireflyUniforms) return;
+
+            bloomStrength += ((pointerInside ? 1 : 0) - bloomStrength) * 0.08;
+
+            if (pointerInside) {
+                bloomRaycaster.setFromCamera(pointerNDC, camera);
+                const hit = bloomRaycaster.ray.intersectSphere(bloomSphere, bloomWorld);
+                if (!hit) {
+                    // Cursor is off the globe — ride the shell nearest the ray
+                    bloomRaycaster.ray.closestPointToPoint(ORIGIN, bloomWorld);
+                    if (bloomWorld.lengthSq() < 1e-6) bloomWorld.set(0, 0, GLOBE_RADIUS);
+                    bloomWorld.setLength(GLOBE_RADIUS + 0.12);
+                }
+            }
+
+            // graph3D just moved this frame; refresh matrices before space conversion
+            graph3D.updateMatrixWorld(true);
+
+            for (let i = 0; i < BLOOM_TAPS; i++) {
+                const target = i === 0 ? bloomWorld : bloomTrail[i - 1];
+                bloomTrail[i].lerp(target, BLOOM_LERP[i]);
+
+                // Fireflies live in the rotating group, the cursor does not —
+                // convert so the lit patch stays put while the globe turns through it
+                fireflyUniforms.uBloom.value[i].copy(bloomTrail[i]);
+                fireflies.worldToLocal(fireflyUniforms.uBloom.value[i]);
+                fireflyUniforms.uBloomStrength.value[i] = bloomStrength * BLOOM_WEIGHT[i];
+            }
+        }
+
+        // Retire the DRAG affordance once the user has actually touched the globe
+        let globeHintDismissed = false;
+        function dismissGlobeHint() {
+            if (globeHintDismissed) return;
+            globeHintDismissed = true;
+            if (globeHint) globeHint.classList.add('is-hidden');
+        }
+
+        // ============================================================
+        // Tethered node cards
+        // ============================================================
+        const CATEGORY_HEX = {
+            core: '#ffffff',
+            project: '#00d4ff',
+            work: '#ff6b35',
+            edu: '#4ecdc4',
+            tech: '#ffe66d',
+            personal: '#ff9ff3',
+            reading: '#9d4edd'
+        };
+
+        const SVG_NS = 'http://www.w3.org/2000/svg';
+        const _cardVecA = new THREE.Vector3();
+        const _cardVecB = new THREE.Vector3();
+        const _camDir = new THREE.Vector3();
+        const _rendererSize = new THREE.Vector2();
+
+        function escapeCardText(value) {
+            return String(value).replace(/[&<>"]/g, ch => (
+                { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]
+            ));
+        }
+
+        function buildCardMarkup(data) {
+            let body = '';
+
+            if (data.kicker) {
+                body += `<div class="node-card-kicker">${escapeCardText(data.kicker)}</div>`;
+            }
+
+            if (data.meter) {
+                const pct = Math.round(Math.max(0, Math.min(1, data.meter.value)) * 100);
+                body += `<div class="node-card-meter">` +
+                    `<div class="node-card-track"><span class="node-card-fill" data-fill="${pct}"></span></div>` +
+                    `<em>${escapeCardText(data.meter.label)}</em>` +
+                    `</div>`;
+            }
+
+            if (data.stats && data.stats.length) {
+                body += '<div class="node-card-stats">' + data.stats.map(([label, value]) =>
+                    `<div class="node-card-stat"><span>${escapeCardText(label)}</span><span>${escapeCardText(value)}</span></div>`
+                ).join('') + '</div>';
+            }
+
+            if (data.tags && data.tags.length) {
+                body += '<div class="node-card-tags">' +
+                    data.tags.map(tag => `<b>${escapeCardText(tag)}</b>`).join('') +
+                    '</div>';
+            }
+
+            if (data.link) {
+                body += `<div class="node-card-link">&#8594; ${escapeCardText(data.link)}</div>`;
+            }
+
+            return `<div class="node-card-bar">` +
+                `<span class="node-card-dots"><i></i><i></i><i></i></span>` +
+                `<span class="node-card-file">${escapeCardText(data.file)}</span>` +
+                `</div><div class="node-card-body">${body}</div>`;
+        }
+
+        function initNodeCards() {
+            cardLayer = document.getElementById('node-cards');
+            tetherLayer = document.getElementById('card-tethers');
+            globeHint = document.getElementById('globe-hint');
+
+            if (!cardLayer || !tetherLayer) return;
+
+            renderer.getSize(_rendererSize);
+            cardsEnabled = _rendererSize.x >= CARDS_MIN_WIDTH;
+            if (!cardsEnabled) return;
+
+            nodeObjects.forEach(obj => {
+                const data = nodeCards[obj.node.id];
+                if (!data) return;
+
+                const color = CATEGORY_HEX[obj.node.category] || '#00d4ff';
+
+                const el = document.createElement('div');
+                el.className = 'node-card';
+                el.dataset.node = obj.node.id;
+                el.innerHTML = buildCardMarkup(data);
+                cardLayer.appendChild(el);
+
+                const line = document.createElementNS(SVG_NS, 'line');
+                line.setAttribute('stroke', color);
+                line.setAttribute('stroke-width', '1');
+                line.setAttribute('stroke-opacity', '0');
+                tetherLayer.appendChild(line);
+
+                const dot = document.createElementNS(SVG_NS, 'circle');
+                dot.setAttribute('r', '2.5');
+                dot.setAttribute('fill', color);
+                dot.setAttribute('fill-opacity', '0');
+                tetherLayer.appendChild(dot);
+
+                cardEntries.set(obj.node.id, {
+                    el, line, dot, obj,
+                    opacity: 0,
+                    height: 0,
+                    filled: false
+                });
+            });
+
+            rotateFeatured(Date.now());
+        }
+
+        // Advance the featured trio through the curated pool
+        function rotateFeatured(now) {
+            if (!FEATURED_POOL.length) return;
+            const next = [];
+            for (let i = 0; i < Math.min(FEATURED_SLOTS, FEATURED_POOL.length); i++) {
+                next.push(FEATURED_POOL[(featuredCursor + i) % FEATURED_POOL.length]);
+            }
+            featuredIds = next;
+            featuredCursor = (featuredCursor + FEATURED_SLOTS) % FEATURED_POOL.length;
+            lastFeatureSwap = now;
+        }
+
+        function hideAllCards() {
+            cardEntries.forEach(entry => {
+                entry.opacity = 0;
+                entry.el.style.opacity = '0';
+                entry.line.setAttribute('stroke-opacity', '0');
+                entry.dot.setAttribute('fill-opacity', '0');
+            });
+        }
+
+        let cardsHidden = false;
+
+        function updateNodeCards(now) {
+            if (!cardEntries.size) return;
+
+            if (!cardsEnabled) {
+                if (!cardsHidden) {
+                    hideAllCards();
+                    cardsHidden = true;
+                }
+                return;
+            }
+            cardsHidden = false;
+
+            if (now - lastFeatureSwap > FEATURE_SWAP_MS) rotateFeatured(now);
+
+            renderer.getSize(_rendererSize);
+            const width = _rendererSize.x;
+            const height = _rendererSize.y;
+
+            const viewBox = `0 0 ${width} ${height}`;
+            if (tetherLayer.getAttribute('viewBox') !== viewBox) {
+                tetherLayer.setAttribute('viewBox', viewBox);
+            }
+
+            camera.getWorldDirection(_camDir);
+
+            // --- Pass 1: who gets a slot, and where ---
+            const candidates = [];
+            if (hoveredCardId && cardEntries.has(hoveredCardId)) candidates.push(hoveredCardId);
+            featuredIds.forEach(id => {
+                if (id !== hoveredCardId && cardEntries.has(id)) candidates.push(id);
+            });
+
+            const placements = new Map();
+            const sideRows = { '-1': [], '1': [] };
+
+            candidates.forEach(id => {
+                const entry = cardEntries.get(id);
+                entry.obj.sphere.getWorldPosition(_cardVecA);
+
+                // How squarely does this node face the camera? Back-side nodes drop out.
+                _cardVecB.copy(_cardVecA).normalize();
+                const facing = -_cardVecB.dot(_camDir);
+                const frontness = Math.max(0, Math.min(1, (facing - 0.02) / 0.4));
+                if (frontness <= 0.02) return;
+
+                if (!entry.height) entry.height = entry.el.offsetHeight || 118;
+
+                _cardVecB.copy(_cardVecA).project(camera);
+                const sx = (_cardVecB.x * 0.5 + 0.5) * width;
+                const sy = (-_cardVecB.y * 0.5 + 0.5) * height;
+
+                // Prefer the edge the node already leans toward; fall back to the other
+                let side = sx < width / 2 ? -1 : 1;
+                if (sideRows[side].length >= MAX_PER_SIDE) {
+                    const other = -side;
+                    if (sideRows[other].length >= MAX_PER_SIDE) return;
+                    side = other;
+                }
+
+                const left = side === -1 ? CARD_EDGE : width - CARD_WIDTH - CARD_EDGE;
+                let top = Math.max(CARD_EDGE, Math.min(height - entry.height - CARD_EDGE, sy - entry.height / 2));
+
+                // Nudge down past anything already occupying this edge
+                sideRows[side].forEach(row => {
+                    if (top < row.bottom + CARD_GAP && top + entry.height > row.top - CARD_GAP) {
+                        top = row.bottom + CARD_GAP;
+                    }
+                });
+                top = Math.min(top, height - entry.height - CARD_EDGE);
+
+                sideRows[side].push({ top, bottom: top + entry.height });
+                placements.set(id, { left, top, side, sx, sy, frontness });
+            });
+
+            // --- Pass 2: ease every card toward its target ---
+            cardEntries.forEach((entry, id) => {
+                const { el, line, dot, obj } = entry;
+                const place = placements.get(id);
+                const target = place ? place.frontness : 0;
+
+                entry.opacity += (target - entry.opacity) * 0.1;
+
+                if (entry.opacity < 0.012) {
+                    if (entry.opacity !== 0) {
+                        entry.opacity = 0;
+                        el.style.opacity = '0';
+                        line.setAttribute('stroke-opacity', '0');
+                        dot.setAttribute('fill-opacity', '0');
+                    }
+                    return;
+                }
+
+                // Kick the meter animation the first time the card is actually seen
+                if (!entry.filled) {
+                    const fill = el.querySelector('.node-card-fill');
+                    if (fill) fill.style.width = fill.dataset.fill + '%';
+                    entry.filled = true;
+                }
+
+                // A card losing its slot keeps its last position while it fades
+                if (place) entry.last = place;
+                const pos = entry.last;
+                if (!pos) return;
+
+                const scale = 0.93 + entry.opacity * 0.07;
+                el.style.transform = `translate3d(${pos.left.toFixed(1)}px, ${pos.top.toFixed(1)}px, 0) scale(${scale.toFixed(3)})`;
+                el.style.opacity = entry.opacity.toFixed(3);
+
+                // Tether runs from the node to the card's inward edge
+                const anchorX = pos.side === -1 ? pos.left + CARD_WIDTH : pos.left;
+                const anchorY = pos.top + entry.height / 2;
+
+                line.setAttribute('x1', pos.sx.toFixed(1));
+                line.setAttribute('y1', pos.sy.toFixed(1));
+                line.setAttribute('x2', anchorX.toFixed(1));
+                line.setAttribute('y2', anchorY.toFixed(1));
+                line.setAttribute('stroke-opacity', (entry.opacity * 0.42).toFixed(3));
+
+                dot.setAttribute('cx', pos.sx.toFixed(1));
+                dot.setAttribute('cy', pos.sy.toFixed(1));
+                dot.setAttribute('fill-opacity', (entry.opacity * 0.9).toFixed(3));
+
+                // Warm the card when the firefly bloom or the cursor is on its node
+                const lit = id === hoveredCardId || obj.proximity > 0.35;
+                if (lit !== entry.lit) {
+                    entry.lit = lit;
+                    el.classList.toggle('is-lit', lit);
+                }
+            });
         }
 
         // Create inner glow effect
@@ -2486,13 +3278,35 @@
                     particles.rotation.x += 0.0001;
                 }
 
-                // Pulse effect for nodes
-                const time = Date.now() * 0.001;
+                const now = Date.now();
+                const time = now * 0.001;
+
+                // Advance the cursor bloom before anything reads its position
+                if (fireflyUniforms) {
+                    fireflyUniforms.uTime.value = time;
+                    updateFireflyBloom();
+                }
+
+                // Pulse effect for nodes + firefly proximity halos
+                const bloomHead = bloomTrail.length ? bloomTrail[0] : null;
                 nodeObjects.forEach((obj, index) => {
                     if (obj.pulseRing) {
                         const pulse = 1 + Math.sin(time * 2 + index * 0.5) * 0.1;
                         obj.pulseRing.scale.set(pulse, pulse, pulse);
                         obj.pulseRing.material.opacity = 0.1 + Math.sin(time * 2 + index * 0.5) * 0.05;
+                    }
+
+                    if (obj.bloomHalo && bloomHead) {
+                        obj.sphere.getWorldPosition(_cardVecA);
+                        const dist = _cardVecA.distanceTo(bloomHead);
+                        const reach = BLOOM_RADIUS[0];
+                        const near = Math.max(0, 1 - dist / reach);
+                        obj.proximity = near * near * bloomStrength;
+
+                        const flicker = 0.85 + Math.sin(time * 6 + index) * 0.15;
+                        obj.bloomHalo.material.opacity = obj.proximity * 0.5 * flicker;
+                        const haloScale = 1 + obj.proximity * 1.1;
+                        obj.bloomHalo.scale.set(haloScale, haloScale, haloScale);
                     }
                 });
 
@@ -2500,6 +3314,8 @@
                 if (innerGlow) {
                     innerGlow.material.opacity = 0.025 + Math.sin(time * 0.5) * 0.015;
                 }
+
+                updateNodeCards(now);
             }
 
             renderer.render(scene, camera);
@@ -2517,6 +3333,7 @@
             renderer.domElement.addEventListener('mousemove', onPointerMove);
             renderer.domElement.addEventListener('mouseup', onPointerUp);
             renderer.domElement.addEventListener('mouseleave', onPointerUp);
+            renderer.domElement.addEventListener('mouseleave', onPointerExit);
 
             // Touch events for mobile
             renderer.domElement.addEventListener('touchstart', onTouchStart, { passive: false });
@@ -2538,7 +3355,13 @@
                 mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
                 mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
 
+                // Drive the firefly bloom even mid-drag
+                pointerNDC.set(mouse.x, mouse.y);
+                pointerInside = true;
+                dismissGlobeHint();
+
                 if (isDragging) {
+                    hoveredCardId = null;
                     const deltaX = event.clientX - previousMousePosition.x;
                     const deltaY = event.clientY - previousMousePosition.y;
 
@@ -2570,9 +3393,11 @@
                         if (hoveredObj) {
                             hoveredObj.sphere.scale.set(1.4, 1.4, 1.4);
                             hoveredObj.glow.scale.set(1.6, 1.6, 1.6);
+                            hoveredCardId = hoveredObj.node.id;
                         }
                         renderer.domElement.style.cursor = 'pointer';
                     } else {
+                        hoveredCardId = null;
                         renderer.domElement.style.cursor = 'grab';
                     }
                 }
@@ -2629,7 +3454,25 @@
                     clickStartPosition = { x: touch.clientX, y: touch.clientY };
                     previousMousePosition = { x: touch.clientX, y: touch.clientY };
                     momentum = { x: 0, y: 0 };
+                    setPointerFromClient(touch.clientX, touch.clientY);
+                    dismissGlobeHint();
                 }
+            }
+
+            // Map a viewport coordinate into normalized device space for the bloom
+            function setPointerFromClient(clientX, clientY) {
+                const rect = renderer.domElement.getBoundingClientRect();
+                if (!rect.width || !rect.height) return;
+                pointerNDC.set(
+                    ((clientX - rect.left) / rect.width) * 2 - 1,
+                    -((clientY - rect.top) / rect.height) * 2 + 1
+                );
+                pointerInside = true;
+            }
+
+            function onPointerExit() {
+                pointerInside = false;
+                hoveredCardId = null;
             }
 
             function onTouchMove(event) {
@@ -2650,10 +3493,12 @@
                     momentum.y = deltaX * SENSITIVITY;
 
                     previousMousePosition = { x: touch.clientX, y: touch.clientY };
+                    setPointerFromClient(touch.clientX, touch.clientY);
                 }
             }
 
             function onTouchEnd(event) {
+                pointerInside = false;
                 if (isDragging) {
                     isDragging = false;
 
@@ -2946,6 +3791,16 @@
                         camera.updateProjectionMatrix();
                         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
                         renderer.setSize(width, height);
+
+                        // Keep the firefly + card layers in step with the new canvas
+                        if (fireflyUniforms) {
+                            fireflyUniforms.uPixelRatio.value = Math.min(window.devicePixelRatio, 2);
+                        }
+                        if (cardEntries.size) {
+                            cardsEnabled = width >= 560;
+                        } else if (width >= 560 && nodeObjects.length) {
+                            initNodeCards();
+                        }
 
                         // Adjust camera distance based on viewport
                         const minDimension = Math.min(width, height);

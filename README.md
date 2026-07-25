@@ -381,6 +381,74 @@ animateGraph() (temporarily modifies rotationSpeed only)
 
 **Critical Rule:** Before modifying any function, check its position in the dependency matrix to understand ripple effects.
 
+### Firefly Field & Tethered Node Cards
+
+Two systems layered onto the globe. Both live in `index.html`; the firefly field
+is WebGL, the cards are plain DOM/SVG projected on top of the canvas.
+
+#### Firefly field (`createAmbientParticles`, `updateFireflyBloom`)
+
+Replaces the original 150 flat particles with a ~900-point `THREE.Points` field
+driven by a custom `ShaderMaterial`: a dense layer hugging the globe surface plus
+a sparse outer drift. Points idle dim cyan with a per-point twinkle; near the
+cursor they swell and shift cyan -> amber -> white-hot.
+
+```
+pointer (NDC)
+  -> bloomRaycaster against bloomSphere (radius GLOBE_RADIUS + 0.12)
+  -> bloomWorld (world space)
+  -> bloomTrail[0..N]  each lerping toward the one before it  (the wake)
+  -> fireflies.worldToLocal(...)  -> uBloom[i] uniform
+```
+
+**The bloom point is tracked in world space, the fireflies live in the rotating
+group.** Converting world -> local each frame is what makes the lit patch stay
+under the cursor while the globe turns through it. Using `graph3D` local space
+instead would glue the glow to the sphere and break the effect.
+
+Tuning constants (top of the 3D section): `BLOOM_TAPS`, `BLOOM_LERP`,
+`BLOOM_WEIGHT`, `BLOOM_RADIUS`. Shader uniforms: `uTime`, `uBloom[]`,
+`uBloomStrength[]`, `uBloomRadius[]`, `uCool`, `uWarm`, `uHot`, `uDrift`.
+
+**Node halos:** each node carries a dedicated `bloomHalo` mesh driven *only* by
+cursor proximity (`obj.proximity`). This is deliberate — `highlightGraphNodes()`
+and `resetGraphHighlight()` own node opacity and scale, so a separate mesh means
+the two systems can never fight over the same property.
+
+#### Tethered node cards (`initNodeCards`, `updateNodeCards`)
+
+Glass panels tethered to their node by an SVG line, positioned by projecting the
+node's world position to canvas pixels each frame.
+
+- **Content:** `nodeCards[nodeId]` — optional `kicker`, `meter` (progress bar),
+  `stats` (label/value rows), `tags` (chips), `link`. Rendered by
+  `buildCardMarkup()`; all text passes through `escapeCardText()`.
+- **Layout:** the graph column is only ~500px wide, so cards pin to the canvas
+  **edges** (`CARD_EDGE`) rather than floating beside their node, and reach in
+  with a long tether. Max `MAX_PER_SIDE` per edge, with vertical collision
+  resolution; a card whose preferred side is full falls back to the other.
+- **Visibility:** driven by `frontness` — the dot of the node's normal against
+  the camera direction. Nodes rotating to the back fade out.
+- **Disabled** below `CARDS_MIN_WIDTH` canvas width, and hidden by CSS under a
+  900px viewport.
+
+Cards are `pointer-events: none` so they never intercept globe dragging. That
+also means links inside them are not clickable by design — clicking the node
+itself still opens the terminal readout.
+
+#### Testing gotchas
+
+- **Headless Chrome cannot render this globe.** Under swiftshader the WebGL
+  canvas comes out empty — verified identical on an unmodified baseline, so an
+  empty globe in a headless screenshot is not a regression. DOM/SVG layers
+  (cards, tethers) *do* render, so headless is still useful for those.
+- **`--virtual-time-budget` never expires** against this page, because
+  `animate3D` schedules `requestAnimationFrame` forever. Inject a head script
+  that wraps `requestAnimationFrame` and stops scheduling after ~250 frames.
+- Top-level `let`/`const` in the inline script are reachable from a second
+  injected `<script>`, so a test harness can poke `pointerInside`, `pointerNDC`,
+  `hoveredCardId` and `featuredIds` directly.
+
 ### Common Modification Scenarios
 
 #### Adding New Portfolio Content
