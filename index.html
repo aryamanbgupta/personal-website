@@ -9,9 +9,13 @@
     <meta property="og:description" content="Identity & access management at PwC by day, machine learning projects by night — explore the interactive system map.">
     <meta property="og:url" content="https://aryaman.ink">
     <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary">
+    <link rel="canonical" href="https://aryaman.ink/">
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230a0a0a'/%3E%3Ctext x='6' y='23' font-family='monospace' font-size='18' fill='%2300d4ff'%3E%26gt;_%3C/text%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
 
         :root {
             --primary: #00d4ff;
@@ -79,7 +83,7 @@
 
         .terminal-content {
             display: grid;
-            grid-template-columns: minmax(200px, 1fr) minmax(350px, 450px) minmax(200px, 1fr);
+            grid-template-columns: minmax(200px, 1fr) minmax(380px, 540px) minmax(200px, 1fr);
             height: 100vh;
             padding: 24px;
             gap: 24px;
@@ -276,6 +280,21 @@
                 inset 0 1px 0 rgba(255, 255, 255, 0.07);
         }
 
+        /* A card takes the pointer only once it's readable, and never mid-drag —
+           drags crossing a card must keep rotating the globe underneath */
+        .node-card.is-live {
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        .node-card.is-hovered {
+            z-index: 2;
+        }
+
+        .node-cards.is-dragging .node-card {
+            pointer-events: none;
+        }
+
         .node-card-bar {
             display: flex;
             align-items: center;
@@ -320,9 +339,9 @@
         }
 
         .node-card-kicker {
-            font-size: 8.5px;
+            font-size: 9px;
             letter-spacing: 1.4px;
-            color: rgba(255, 255, 255, 0.42);
+            color: rgba(255, 255, 255, 0.55);
             font-weight: 500;
         }
 
@@ -371,7 +390,7 @@
         }
 
         .node-card-stat span:first-child {
-            color: rgba(255, 255, 255, 0.5);
+            color: rgba(255, 255, 255, 0.62);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -401,10 +420,16 @@
         }
 
         .node-card-link {
+            display: block;
             font-size: 9.5px;
             color: #ffb347;
             letter-spacing: 0.4px;
             opacity: 0.9;
+            text-decoration: none;
+        }
+
+        .node-card-link:hover {
+            text-decoration: underline;
         }
 
         /* Drag affordance */
@@ -419,7 +444,7 @@
             gap: 8px;
             font-size: 9px;
             letter-spacing: 2.4px;
-            color: rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.45);
             pointer-events: none;
             transition: opacity 600ms ease;
             animation: hintBreathe 3.4s ease-in-out infinite;
@@ -447,7 +472,9 @@
                 animation: none;
             }
             .node-card {
-                transition: opacity 200ms linear;
+                /* !important so the global reduced-motion reset can't zero this
+                   intentional, already-gentle fade */
+                transition: opacity 200ms linear !important;
             }
         }
 
@@ -803,6 +830,16 @@
             margin-bottom: 20px;
         }
 
+        .card-description a {
+            color: var(--primary-light);
+            text-decoration: none;
+        }
+
+        .card-description a:hover,
+        .card-description a:focus-visible {
+            text-decoration: underline;
+        }
+
         .card-tech {
             display: flex;
             flex-wrap: wrap;
@@ -1088,6 +1125,17 @@
                 min-height: 100vh;
                 padding: 16px;
                 gap: 20px;
+            }
+
+            /* The stacked column is taller than the viewport — it must scroll */
+            body {
+                overflow-y: auto;
+                height: auto;
+            }
+
+            .terminal-container {
+                height: auto;
+                min-height: 100vh;
             }
 
             .left-panel {
@@ -1380,7 +1428,7 @@
         /* Large Desktop */
         @media screen and (min-width: 1400px) {
             .terminal-content {
-                grid-template-columns: minmax(250px, 1fr) 500px minmax(250px, 1fr);
+                grid-template-columns: minmax(250px, 1fr) 560px minmax(250px, 1fr);
                 padding: 32px;
                 gap: 32px;
             }
@@ -1493,7 +1541,7 @@
                     <div class="menu-item" data-section="education" data-category="edu">> EDUCATION</div>
                     <div class="menu-item" data-section="contact" data-category="core">> CONTACT</div>
                     <div class="menu-item" data-section="work" data-category="work">> WORK_EXPERIENCE</div>
-                    <div class="menu-item" data-section="skills" data-category="content">> SKILLS</div>
+                    <div class="menu-item" data-section="skills" data-category="tech">> SKILLS</div>
                     <div class="menu-item" data-section="bookshelf" data-category="reading">> BOOKSHELF</div>
                 </div>
             </div>
@@ -1502,14 +1550,14 @@
                 <div class="graph-title">SYSTEM MAP</div>
                 <div id="graph"></div>
                 <svg class="card-tethers" id="card-tethers" aria-hidden="true"></svg>
-                <div class="node-cards" id="node-cards" aria-hidden="true"></div>
+                <div class="node-cards" id="node-cards"></div>
                 <div class="globe-hint" id="globe-hint">&#8592;&nbsp; DRAG &nbsp;&#8594;</div>
             </div>
 
             <div class="right-panel dissolution-target">
                 <div class="avatar-container">
                     <div class="avatar-frame">
-                        <img src="avatar-image.png" alt="Avatar" class="avatar-image">
+                        <img src="avatar-image-small.webp" alt="Portrait of Aryaman Gupta" class="avatar-image" width="280" height="365">
                         <div class="avatar-label">USER.PROFILE</div>
                     </div>
                 </div>
@@ -1517,7 +1565,7 @@
             </div>
         </div>
 
-        <div class="content-display" id="content-display">
+        <div class="content-display" id="content-display" aria-live="polite">
             <div id="content-text">
                 <!-- Content will be populated by JavaScript -->
             </div>
@@ -1564,7 +1612,7 @@
                         <div class="card-title">Vulnerability Detection in VS Code</div>
                         <div class="card-meta">Jan 2023 - May 2023 | Security Research | Boston University</div>
                         <div class="card-description">
-                            Developed automation tool to analyse 250+ VS code extensions and identify the vulnerable extensions. Identified threats to extensions and developed exploits to test extensions using automated python script. Found and exploited 2 types of vulnerabilities- path traversal and zip slip affecting 500k and 250k users.
+                            Developed automation tool to analyze 250+ VS Code extensions and identify the vulnerable extensions. Identified threats to extensions and developed exploits to test extensions using automated Python scripts. Found and exploited 2 types of vulnerabilities — path traversal and zip slip — affecting 500k and 250k users.
                         </div>
                         <div class="card-tech">
                             <span class="tech-tag">Python</span>
@@ -1654,7 +1702,7 @@
                         <div class="card">
                             <div class="card-title">Email</div>
                             <div class="card-description">
-                                aryaman@bu.edu<br>
+                                <a href="mailto:aryaman@bu.edu">aryaman@bu.edu</a><br>
                                 Response time: &lt; 24 hours<br>
                                 Status: ACTIVE
                             </div>
@@ -1663,7 +1711,7 @@
                         <div class="card">
                             <div class="card-title">LinkedIn</div>
                             <div class="card-description">
-                                linkedin.com/in/aryaman-bhavya-gupta<br>
+                                <a href="https://linkedin.com/in/aryaman-bhavya-gupta" target="_blank" rel="noopener">linkedin.com/in/aryaman-bhavya-gupta</a><br>
                                 Professional inquiries<br>
                                 Status: ACTIVE
                             </div>
@@ -1672,7 +1720,7 @@
                         <div class="card">
                             <div class="card-title">GitHub</div>
                             <div class="card-description">
-                                github.com/aryamanbgupta<br>
+                                <a href="https://github.com/aryamanbgupta" target="_blank" rel="noopener">github.com/aryamanbgupta</a><br>
                                 Code collaborations<br>
                                 Status: ACTIVE
                             </div>
@@ -1793,7 +1841,7 @@
             </div>
         </div>
         
-        <!-- Certifications Page -->
+        <!-- Education Page -->
         <div class="page-container" id="education-page">
             <div class="page-header">
                 <div class="page-title">EDUCATION.LOG</div>
@@ -2157,9 +2205,9 @@
         // ============================================================
         let fireflies = null, fireflyUniforms = null;
         const BLOOM_TAPS = 3;                       // trailing wake points
-        const BLOOM_LERP = [0.24, 0.11, 0.06];      // per-tap follow speed
+        const BLOOM_LERP = [0.32, 0.16, 0.09];      // per-tap follow speed
         const BLOOM_WEIGHT = [1.0, 0.55, 0.3];      // per-tap brightness
-        const BLOOM_RADIUS = [1.45, 1.05, 0.75];    // per-tap reach (world units)
+        const BLOOM_RADIUS = [0.85, 0.60, 0.42];    // per-tap reach (world units)
         const bloomWorld = new THREE.Vector3(0, 0, GLOBE_RADIUS);
         const bloomTrail = [];                      // world-space wake, index 0 = newest
         const pointerNDC = new THREE.Vector2(0, 0);
@@ -2169,6 +2217,18 @@
         const bloomRaycaster = new THREE.Raycaster();
         const ORIGIN = new THREE.Vector3(0, 0, 0);
         const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (reduceMotion) autoRotate = false; // the globe holds still until dragged
+
+        // Frame pacing — every per-frame easing constant below is tuned against
+        // a 120Hz display, so frameScale is "how many 120Hz frames just elapsed".
+        // Multiplying accumulations (or exponentiating decays) by it makes the
+        // motion identical on 60Hz, 120Hz and anything else.
+        const REF_FPS = 120;
+        let lastFrameStamp = 0;
+        let frameScale = 1;
+        function easeK(k) {
+            return 1 - Math.pow(1 - k, frameScale);
+        }
 
         // ============================================================
         // TETHERED NODE CARDS — floating previews wired to their node
@@ -2185,9 +2245,15 @@
         let lastFeatureSwap = 0;
         // The graph column is only ~500px wide, so cards pin to the canvas edges
         // and reach their node with a long tether rather than floating beside it.
+        // CSS hides the card layers at ≤900px viewport — JS must agree, or it
+        // burns per-frame layout math on display:none elements
+        function cardsViewportAllows() {
+            return window.matchMedia('(min-width: 901px)').matches;
+        }
         const CARD_WIDTH = 164;
         const CARD_EDGE = 6;
         const CARD_GAP = 10;
+        const HOVER_OFFSET = 18;                    // gap between node and its popped card
         const MAX_PER_SIDE = 2;
         const CARDS_MIN_WIDTH = 400;
 
@@ -2217,7 +2283,7 @@
             project2: {
                 file: 'VSCODE_SECURITY.exe', kicker: 'VULN RESEARCH',
                 meter: { value: 0.92, label: '750K+ users protected' },
-                tags: ['Static Analysis', 'Node']
+                tags: ['Static Analysis', 'Python']
             },
             project3: {
                 file: 'PDF_ANALYZER.exe', kicker: 'FULL-STACK / FLASK',
@@ -2293,6 +2359,21 @@
             }
         };
 
+        // Back the camera off until the globe (plus node rings and a firefly
+        // margin) fits the tighter canvas axis. The old fixed distances framed
+        // by height only, so the globe overflowed the narrow portrait column.
+        function fitCameraToGlobe(width, height) {
+            const R_EFF = GLOBE_RADIUS + 0.35;  // nodes + reticle rings + margin
+            const FILL = 0.84;                  // globe's share of the tight axis
+            const vHalf = THREE.MathUtils.degToRad(camera.fov) / 2;
+            const limit = Math.atan(Math.tan(vHalf) * Math.min(width / height, 1));
+            camera.position.z = R_EFF / Math.sin(limit * FILL);
+            if (fireflyUniforms) {
+                // Keep firefly point sizes as designed at any framing distance
+                fireflyUniforms.uCamDist.value = camera.position.z;
+            }
+        }
+
         // Initialize the 3D graph
         function initGraph() {
             const container = document.getElementById('graph');
@@ -2313,16 +2394,6 @@
             graph3D = new THREE.Group();
             scene.add(graph3D);
 
-            // Category colors with enhanced palette
-            const categoryColors = {
-                core: 0xffffff,
-                project: 0x00d4ff,
-                work: 0xff6b35,
-                edu: 0x4ecdc4,
-                tech: 0xffe66d,
-                personal: 0xff9ff3,
-                reading: 0x9d4edd
-            };
 
             // Create wireframe globe
             createWireframeGlobe();
@@ -2336,10 +2407,17 @@
             // Distribute nodes on sphere surface using fibonacci sphere
             const nodes3D = distributeNodesOnSphere(graphData.nodes, GLOBE_RADIUS);
 
-            // Create enhanced node spheres
+            // Geometries shared across all nodes — only materials differ
+            const haloGeometry = new THREE.SphereGeometry(0.24, 16, 16);
+            const coreGeometry = new THREE.SphereGeometry(0.05, 12, 12);
+            // Generous invisible hit target so small nodes stay easy to point at
+            const hitGeometry = new THREE.SphereGeometry(0.19, 8, 8);
+            const hitMaterial = new THREE.MeshBasicMaterial();
+
+            // Create node contacts — small crisp dot + white kernel + tight
+            // light bleed + thin camera-facing reticle ring. Instrument, not candy.
             nodes3D.forEach((node, index) => {
-                // Main node sphere with better geometry
-                const geometry = new THREE.SphereGeometry(0.12, 32, 32);
+                const geometry = new THREE.SphereGeometry(0.085, 24, 24);
                 const material = new THREE.MeshBasicMaterial({
                     color: categoryColors[node.category] || 0x00d4ff,
                     transparent: true,
@@ -2349,31 +2427,55 @@
                 sphere.position.set(node.x, node.y, node.z);
                 sphere.userData = node;
 
-                // Outer glow ring
-                const glowGeometry = new THREE.SphereGeometry(0.18, 32, 32);
+                // Tight light bleed — additive so it reads as emitted light,
+                // not a dull balloon painted behind the dot
+                const glowGeometry = new THREE.SphereGeometry(0.13, 24, 24);
                 const glowMaterial = new THREE.MeshBasicMaterial({
                     color: categoryColors[node.category] || 0x00d4ff,
                     transparent: true,
-                    opacity: 0.25
+                    opacity: 0.25,
+                    blending: THREE.AdditiveBlending,
+                    depthWrite: false
                 });
                 const glow = new THREE.Mesh(glowGeometry, glowMaterial);
                 glow.position.copy(sphere.position);
 
-                // Add pulse ring effect
-                const pulseGeometry = new THREE.RingGeometry(0.15, 0.22, 32);
+                // White-hot kernel inside the dot. A child of the sphere so
+                // highlight scaling carries it; opacity follows in animate3D.
+                const coreMaterial = new THREE.MeshBasicMaterial({
+                    color: 0xffffff,
+                    transparent: true,
+                    opacity: 0.85,
+                    blending: THREE.AdditiveBlending,
+                    depthWrite: false
+                });
+                const core = new THREE.Mesh(coreGeometry, coreMaterial);
+                core.raycast = function () {}; // r128 raycasts children — keep hits off the visuals
+                sphere.add(core);
+
+                // Thin reticle ring, billboarded to the camera every frame in
+                // animate3D — tilted surface rings read as cartoon planets
+                const pulseGeometry = new THREE.RingGeometry(0.15, 0.165, 48);
                 const pulseMaterial = new THREE.MeshBasicMaterial({
                     color: categoryColors[node.category] || 0x00d4ff,
                     transparent: true,
                     opacity: 0.15,
-                    side: THREE.DoubleSide
+                    side: THREE.DoubleSide,
+                    blending: THREE.AdditiveBlending,
+                    depthWrite: false
                 });
                 const pulseRing = new THREE.Mesh(pulseGeometry, pulseMaterial);
                 pulseRing.position.copy(sphere.position);
-                pulseRing.lookAt(0, 0, 0);
+
+                // Invisible, generous raycast target — pointing stays easy even
+                // though the visible dot is small
+                const hit = new THREE.Mesh(hitGeometry, hitMaterial);
+                hit.position.copy(sphere.position);
+                hit.userData = node;
+                hit.visible = false;
 
                 // Bloom halo — driven ONLY by the firefly cursor, so it never
                 // collides with the opacity/scale that highlighting owns
-                const haloGeometry = new THREE.SphereGeometry(0.30, 16, 16);
                 const haloMaterial = new THREE.MeshBasicMaterial({
                     color: 0xffb347,
                     transparent: true,
@@ -2383,12 +2485,14 @@
                 });
                 const bloomHalo = new THREE.Mesh(haloGeometry, haloMaterial);
                 bloomHalo.position.copy(sphere.position);
+                bloomHalo.visible = false;
 
                 graph3D.add(sphere);
                 graph3D.add(glow);
                 graph3D.add(pulseRing);
                 graph3D.add(bloomHalo);
-                nodeObjects.push({ sphere, glow, pulseRing, bloomHalo, node, baseOpacity: 0.95, proximity: 0 });
+                graph3D.add(hit);
+                nodeObjects.push({ sphere, glow, core, pulseRing, bloomHalo, hit, node, baseOpacity: 0.95, proximity: 0 });
             });
 
             // Create curved links between nodes
@@ -2405,7 +2509,7 @@
             });
 
             // Position camera
-            camera.position.set(0, 0, 6);
+            fitCameraToGlobe(width, height);
             camera.lookAt(0, 0, 0);
 
             // Build the floating card layer now that nodeObjects exist
@@ -2573,7 +2677,7 @@
                         for (int i = 0; i < ${BLOOM_TAPS}; i++) {
                             float d = distance(pos, uBloom[i]);
                             float p = 1.0 - smoothstep(0.0, uBloomRadius[i], d);
-                            glow = max(glow, pow(p, 1.7) * uBloomStrength[i]);
+                            glow = max(glow, pow(p, 2.6) * uBloomStrength[i]);
                         }
                         vGlow = glow;
                         vTwinkle = 0.5 + 0.5 * sin(uTime * (0.9 + aSeed * 2.3) + aSeed * 57.0);
@@ -2624,7 +2728,7 @@
         function updateFireflyBloom() {
             if (!fireflies || !fireflyUniforms) return;
 
-            bloomStrength += ((pointerInside ? 1 : 0) - bloomStrength) * 0.08;
+            bloomStrength += ((pointerInside ? 1 : 0) - bloomStrength) * easeK(0.08);
 
             if (pointerInside) {
                 bloomRaycaster.setFromCamera(pointerNDC, camera);
@@ -2642,7 +2746,7 @@
 
             for (let i = 0; i < BLOOM_TAPS; i++) {
                 const target = i === 0 ? bloomWorld : bloomTrail[i - 1];
-                bloomTrail[i].lerp(target, BLOOM_LERP[i]);
+                bloomTrail[i].lerp(target, easeK(BLOOM_LERP[i]));
 
                 // Fireflies live in the rotating group, the cursor does not —
                 // convert so the lit patch stays put while the globe turns through it
@@ -2663,15 +2767,20 @@
         // ============================================================
         // Tethered node cards
         // ============================================================
-        const CATEGORY_HEX = {
-            core: '#ffffff',
-            project: '#00d4ff',
-            work: '#ff6b35',
-            edu: '#4ecdc4',
-            tech: '#ffe66d',
-            personal: '#ff9ff3',
-            reading: '#9d4edd'
+        // Single source of truth for the category palette; CATEGORY_HEX is the
+        // CSS-string view of the same values for the DOM card/tether layers
+        const categoryColors = {
+            core: 0xffffff,
+            project: 0x00d4ff,
+            work: 0xff6b35,
+            edu: 0x4ecdc4,
+            tech: 0xffe66d,
+            personal: 0xff9ff3,
+            reading: 0x9d4edd
         };
+        const CATEGORY_HEX = Object.fromEntries(Object.entries(categoryColors).map(
+            ([category, value]) => [category, '#' + value.toString(16).padStart(6, '0')]
+        ));
 
         const SVG_NS = 'http://www.w3.org/2000/svg';
         const _cardVecA = new THREE.Vector3();
@@ -2713,7 +2822,10 @@
             }
 
             if (data.link) {
-                body += `<div class="node-card-link">&#8594; ${escapeCardText(data.link)}</div>`;
+                // tabindex=-1: cards are a pointer affordance; keyboard users
+                // reach the same content through the node's terminal readout
+                const href = escapeCardText(data.link);
+                body += `<a class="node-card-link" href="https://${href}" target="_blank" rel="noopener" tabindex="-1">&#8594; ${href}</a>`;
             }
 
             return `<div class="node-card-bar">` +
@@ -2730,7 +2842,7 @@
             if (!cardLayer || !tetherLayer) return;
 
             renderer.getSize(_rendererSize);
-            cardsEnabled = _rendererSize.x >= CARDS_MIN_WIDTH;
+            cardsEnabled = _rendererSize.x >= CARDS_MIN_WIDTH && cardsViewportAllows();
             if (!cardsEnabled) return;
 
             nodeObjects.forEach(obj => {
@@ -2743,6 +2855,18 @@
                 el.className = 'node-card';
                 el.dataset.node = obj.node.id;
                 el.innerHTML = buildCardMarkup(data);
+
+                // A visible card acts like its node: hover lights it (and holds
+                // the featured pair), click opens the terminal readout
+                el.addEventListener('mouseenter', () => { hoveredCardId = obj.node.id; });
+                el.addEventListener('mouseleave', () => {
+                    if (hoveredCardId === obj.node.id) hoveredCardId = null;
+                });
+                el.addEventListener('click', (event) => {
+                    if (event.target.closest('a')) return; // real links navigate themselves
+                    selectSection(obj.node.id, obj.node.category);
+                });
+
                 cardLayer.appendChild(el);
 
                 const line = document.createElementNS(SVG_NS, 'line');
@@ -2768,7 +2892,7 @@
             rotateFeatured(Date.now());
         }
 
-        // Advance the featured trio through the curated pool
+        // Advance the featured pair through the curated pool
         function rotateFeatured(now) {
             if (!FEATURED_POOL.length) return;
             const next = [];
@@ -2783,6 +2907,8 @@
         function hideAllCards() {
             cardEntries.forEach(entry => {
                 entry.opacity = 0;
+                entry.live = false;
+                entry.el.classList.remove('is-live');
                 entry.el.style.opacity = '0';
                 entry.line.setAttribute('stroke-opacity', '0');
                 entry.dot.setAttribute('fill-opacity', '0');
@@ -2803,7 +2929,13 @@
             }
             cardsHidden = false;
 
-            if (now - lastFeatureSwap > FEATURE_SWAP_MS) rotateFeatured(now);
+            // Hold the current pair while the user is reading a card, and don't
+            // auto-swap at all under reduced motion (it's unprompted movement)
+            if (reduceMotion || hoveredCardId) {
+                lastFeatureSwap = Math.max(lastFeatureSwap, now - FEATURE_SWAP_MS + 1500);
+            } else if (now - lastFeatureSwap > FEATURE_SWAP_MS) {
+                rotateFeatured(now);
+            }
 
             renderer.getSize(_rendererSize);
             const width = _rendererSize.x;
@@ -2842,6 +2974,30 @@
                 const sx = (_cardVecB.x * 0.5 + 0.5) * width;
                 const sy = (-_cardVecB.y * 0.5 + 0.5) * height;
 
+                // The hovered node's card pops up right beside it — only the
+                // ambient featured cards pin to the canvas edges
+                if (id === hoveredCardId) {
+                    let side = 1;                   // tether meets the card's left edge
+                    let left = sx + HOVER_OFFSET;
+                    if (left + CARD_WIDTH > width - CARD_EDGE) {
+                        side = -1;                  // no room — flip to the node's other flank
+                        left = sx - CARD_WIDTH - HOVER_OFFSET;
+                    }
+                    left = Math.max(CARD_EDGE, left);
+                    const top = Math.max(CARD_EDGE, Math.min(height - entry.height - CARD_EDGE, sy - entry.height / 2));
+
+                    // Where it intrudes into an edge band, let that edge's cards dodge it
+                    [-1, 1].forEach(edge => {
+                        const bandLeft = edge === -1 ? CARD_EDGE : width - CARD_WIDTH - CARD_EDGE;
+                        if (left < bandLeft + CARD_WIDTH && left + CARD_WIDTH > bandLeft) {
+                            sideRows[edge].push({ top, bottom: top + entry.height });
+                        }
+                    });
+
+                    placements.set(id, { left, top, side, sx, sy, frontness });
+                    return;
+                }
+
                 // Prefer the edge the node already leans toward; fall back to the other
                 let side = sx < width / 2 ? -1 : 1;
                 if (sideRows[side].length >= MAX_PER_SIDE) {
@@ -2859,19 +3015,28 @@
                         top = row.bottom + CARD_GAP;
                     }
                 });
-                top = Math.min(top, height - entry.height - CARD_EDGE);
+                if (top + entry.height > height - CARD_EDGE) {
+                    // No room below the stack — go above it rather than clipping
+                    // back up into the card we just dodged
+                    const stackTop = sideRows[side].length
+                        ? Math.min(...sideRows[side].map(row => row.top))
+                        : height - CARD_EDGE;
+                    top = stackTop - CARD_GAP - entry.height;
+                    if (top < CARD_EDGE) return; // edge genuinely full this frame
+                }
 
                 sideRows[side].push({ top, bottom: top + entry.height });
                 placements.set(id, { left, top, side, sx, sy, frontness });
             });
 
             // --- Pass 2: ease every card toward its target ---
+            const fadeK = easeK(0.1);
             cardEntries.forEach((entry, id) => {
                 const { el, line, dot, obj } = entry;
                 const place = placements.get(id);
                 const target = place ? place.frontness : 0;
 
-                entry.opacity += (target - entry.opacity) * 0.1;
+                entry.opacity += (target - entry.opacity) * fadeK;
 
                 if (entry.opacity < 0.012) {
                     if (entry.opacity !== 0) {
@@ -2899,6 +3064,13 @@
                 el.style.transform = `translate3d(${pos.left.toFixed(1)}px, ${pos.top.toFixed(1)}px, 0) scale(${scale.toFixed(3)})`;
                 el.style.opacity = entry.opacity.toFixed(3);
 
+                // Cards only accept the pointer once they're actually readable
+                const live = entry.opacity > 0.5;
+                if (live !== entry.live) {
+                    entry.live = live;
+                    el.classList.toggle('is-live', live);
+                }
+
                 // Tether runs from the node to the card's inward edge
                 const anchorX = pos.side === -1 ? pos.left + CARD_WIDTH : pos.left;
                 const anchorY = pos.top + entry.height / 2;
@@ -2918,6 +3090,13 @@
                 if (lit !== entry.lit) {
                     entry.lit = lit;
                     el.classList.toggle('is-lit', lit);
+                }
+
+                // The popped hover card floats mid-canvas — keep it above edge cards
+                const hoveredNow = id === hoveredCardId;
+                if (hoveredNow !== entry.hovered) {
+                    entry.hovered = hoveredNow;
+                    el.classList.toggle('is-hovered', hoveredNow);
                 }
             });
         }
@@ -3204,7 +3383,7 @@
             currentRotationX = 0;
             currentRotationY = 0;
             momentum = { x: 0, y: 0 };
-            autoRotate = true;
+            autoRotate = !reduceMotion;
 
             // Reset all node scales and opacity
             nodeObjects.forEach(obj => {
@@ -3250,35 +3429,44 @@
         function animate3D() {
             requestAnimationFrame(animate3D);
 
+            // Nothing to show a hidden tab — skip the whole frame
+            if (document.hidden) return;
+
+            const now = Date.now();
+            // Clamp so a backgrounded tab resuming doesn't lurch (max ~4 frames)
+            frameScale = lastFrameStamp ? Math.min((now - lastFrameStamp) * REF_FPS / 1000, 4) : 1;
+            lastFrameStamp = now;
+
             if (graph3D) {
                 // Apply momentum with damping
                 if (!isDragging) {
-                    momentum.x *= DAMPING;
-                    momentum.y *= DAMPING;
+                    const damp = Math.pow(DAMPING, frameScale);
+                    momentum.x *= damp;
+                    momentum.y *= damp;
 
                     // Add auto-rotation when momentum is low
                     if (Math.abs(momentum.x) < 0.0001 && Math.abs(momentum.y) < 0.0001 && autoRotate) {
                         momentum.y = rotationSpeed;
                     }
 
-                    targetRotationX += momentum.x;
-                    targetRotationY += momentum.y;
+                    targetRotationX += momentum.x * frameScale;
+                    targetRotationY += momentum.y * frameScale;
                 }
 
                 // Smooth interpolation to target rotation
-                currentRotationX += (targetRotationX - currentRotationX) * 0.08;
-                currentRotationY += (targetRotationY - currentRotationY) * 0.08;
+                const rotEase = easeK(0.08);
+                currentRotationX += (targetRotationX - currentRotationX) * rotEase;
+                currentRotationY += (targetRotationY - currentRotationY) * rotEase;
 
                 graph3D.rotation.x = currentRotationX;
                 graph3D.rotation.y = currentRotationY;
 
                 // Animate particles slowly
                 if (particles) {
-                    particles.rotation.y += 0.0003;
-                    particles.rotation.x += 0.0001;
+                    particles.rotation.y += 0.0003 * frameScale;
+                    particles.rotation.x += 0.0001 * frameScale;
                 }
 
-                const now = Date.now();
                 const time = now * 0.001;
 
                 // Advance the cursor bloom before anything reads its position
@@ -3294,6 +3482,14 @@
                         const pulse = 1 + Math.sin(time * 2 + index * 0.5) * 0.1;
                         obj.pulseRing.scale.set(pulse, pulse, pulse);
                         obj.pulseRing.material.opacity = 0.1 + Math.sin(time * 2 + index * 0.5) * 0.05;
+                        // Reticle faces the viewer — a tilted ring reads as a toy planet
+                        obj.pulseRing.lookAt(camera.position);
+                    }
+
+                    // Kernel tracks whatever opacity the highlight system chose,
+                    // so dimmed nodes don't keep bright pips (read-only follow)
+                    if (obj.core) {
+                        obj.core.material.opacity = obj.sphere.material.opacity * 0.9;
                     }
 
                     if (obj.bloomHalo && bloomHead) {
@@ -3304,7 +3500,10 @@
                         obj.proximity = near * near * bloomStrength;
 
                         const flicker = 0.85 + Math.sin(time * 6 + index) * 0.15;
-                        obj.bloomHalo.material.opacity = obj.proximity * 0.5 * flicker;
+                        const haloOpacity = obj.proximity * 0.5 * flicker;
+                        obj.bloomHalo.material.opacity = haloOpacity;
+                        // Skip the draw call entirely for the (usual) idle halos
+                        obj.bloomHalo.visible = haloOpacity > 0.004;
                         const haloScale = 1 + obj.proximity * 1.1;
                         obj.bloomHalo.scale.set(haloScale, haloScale, haloScale);
                     }
@@ -3325,6 +3524,7 @@
         function addGraphInteraction() {
             const raycaster = new THREE.Raycaster();
             const mouse = new THREE.Vector2();
+            const UNIT_SCALE = new THREE.Vector3(1, 1, 1);
             let clickStartTime = 0;
             let clickStartPosition = { x: 0, y: 0 };
 
@@ -3332,17 +3532,23 @@
             renderer.domElement.addEventListener('mousedown', onPointerDown);
             renderer.domElement.addEventListener('mousemove', onPointerMove);
             renderer.domElement.addEventListener('mouseup', onPointerUp);
-            renderer.domElement.addEventListener('mouseleave', onPointerUp);
-            renderer.domElement.addEventListener('mouseleave', onPointerExit);
+            renderer.domElement.addEventListener('mouseleave', onPointerLeave);
 
             // Touch events for mobile
             renderer.domElement.addEventListener('touchstart', onTouchStart, { passive: false });
             renderer.domElement.addEventListener('touchmove', onTouchMove, { passive: false });
             renderer.domElement.addEventListener('touchend', onTouchEnd);
 
+            // While dragging, cards must not steal the pointer from the canvas —
+            // otherwise a drag crossing a card fires mouseleave and dies mid-swipe
+            function setCardDragState(active) {
+                if (cardLayer) cardLayer.classList.toggle('is-dragging', active);
+            }
+
             function onPointerDown(event) {
                 isDragging = true;
                 autoRotate = false;
+                setCardDragState(true);
                 clickStartTime = Date.now();
                 clickStartPosition = { x: event.clientX, y: event.clientY };
                 previousMousePosition = { x: event.clientX, y: event.clientY };
@@ -3379,20 +3585,20 @@
                 } else {
                     // Hover detection
                     raycaster.setFromCamera(mouse, camera);
-                    const spheres = nodeObjects.map(obj => obj.sphere);
+                    const spheres = nodeObjects.map(obj => obj.hit);
                     const intersects = raycaster.intersectObjects(spheres);
 
                     // Reset all node scales smoothly
                     nodeObjects.forEach(obj => {
-                        obj.sphere.scale.lerp(new THREE.Vector3(1, 1, 1), 0.15);
-                        obj.glow.scale.lerp(new THREE.Vector3(1, 1, 1), 0.15);
+                        obj.sphere.scale.lerp(UNIT_SCALE, 0.15);
+                        obj.glow.scale.lerp(UNIT_SCALE, 0.15);
                     });
 
                     if (intersects.length > 0) {
-                        const hoveredObj = nodeObjects.find(obj => obj.sphere === intersects[0].object);
+                        const hoveredObj = nodeObjects.find(obj => obj.hit === intersects[0].object);
                         if (hoveredObj) {
-                            hoveredObj.sphere.scale.set(1.4, 1.4, 1.4);
-                            hoveredObj.glow.scale.set(1.6, 1.6, 1.6);
+                            hoveredObj.sphere.scale.set(1.18, 1.18, 1.18);
+                            hoveredObj.glow.scale.set(1.28, 1.28, 1.28);
                             hoveredCardId = hoveredObj.node.id;
                         }
                         renderer.domElement.style.cursor = 'pointer';
@@ -3404,6 +3610,7 @@
             }
 
             function onPointerUp(event) {
+                setCardDragState(false);
                 if (isDragging) {
                     isDragging = false;
                     renderer.domElement.style.cursor = 'grab';
@@ -3422,7 +3629,7 @@
                     // Re-enable auto-rotate after delay
                     setTimeout(() => {
                         if (!isDragging && Math.abs(momentum.x) < 0.001 && Math.abs(momentum.y) < 0.001) {
-                            autoRotate = true;
+                            autoRotate = !reduceMotion;
                         }
                     }, 3000);
                 }
@@ -3434,7 +3641,7 @@
                 mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
 
                 raycaster.setFromCamera(mouse, camera);
-                const spheres = nodeObjects.map(obj => obj.sphere);
+                const spheres = nodeObjects.map(obj => obj.hit);
                 const intersects = raycaster.intersectObjects(spheres);
 
                 if (intersects.length > 0) {
@@ -3449,6 +3656,7 @@
                     event.preventDefault();
                     isDragging = true;
                     autoRotate = false;
+                    setCardDragState(true);
                     clickStartTime = Date.now();
                     const touch = event.touches[0];
                     clickStartPosition = { x: touch.clientX, y: touch.clientY };
@@ -3475,6 +3683,22 @@
                 hoveredCardId = null;
             }
 
+            // Leaving the canvas ends any drag WITHOUT the click check —
+            // routing this through onPointerUp could fire a spurious node select
+            function onPointerLeave() {
+                setCardDragState(false);
+                if (isDragging) {
+                    isDragging = false;
+                    renderer.domElement.style.cursor = 'grab';
+                    setTimeout(() => {
+                        if (!isDragging && Math.abs(momentum.x) < 0.001 && Math.abs(momentum.y) < 0.001) {
+                            autoRotate = !reduceMotion;
+                        }
+                    }, 3000);
+                }
+                onPointerExit();
+            }
+
             function onTouchMove(event) {
                 if (event.touches.length === 1 && isDragging) {
                     event.preventDefault();
@@ -3499,6 +3723,7 @@
 
             function onTouchEnd(event) {
                 pointerInside = false;
+                setCardDragState(false);
                 if (isDragging) {
                     isDragging = false;
 
@@ -3519,7 +3744,7 @@
                     // Re-enable auto-rotate after delay
                     setTimeout(() => {
                         if (!isDragging && Math.abs(momentum.x) < 0.001 && Math.abs(momentum.y) < 0.001) {
-                            autoRotate = true;
+                            autoRotate = !reduceMotion;
                         }
                     }, 3000);
                 }
@@ -3531,7 +3756,7 @@
                 mouse.y = -((touch.clientY - rect.top) / rect.height) * 2 + 1;
 
                 raycaster.setFromCamera(mouse, camera);
-                const spheres = nodeObjects.map(obj => obj.sphere);
+                const spheres = nodeObjects.map(obj => obj.hit);
                 const intersects = raycaster.intersectObjects(spheres);
 
                 if (intersects.length > 0) {
@@ -3626,7 +3851,14 @@
             }
             
             display.classList.add('active');
-            
+
+            // Reduced motion: print instantly instead of animating
+            if (reduceMotion) {
+                textEl.textContent = content;
+                textEl.innerHTML = textEl.innerHTML + '<span class="cursor">_</span>';
+                return;
+            }
+
             // Typewriter effect — a few chars per tick so long entries finish in ~2s
             textEl.textContent = '';
             let i = 0;
@@ -3700,7 +3932,7 @@
             nodeObjects.forEach(obj => {
                 if (obj.node.category === category) {
                     obj.sphere.material.opacity = 1.0;
-                    obj.glow.material.opacity = 0.5;
+                    obj.glow.material.opacity = 0.32;
                     obj.sphere.scale.set(1.2, 1.2, 1.2);
                     obj.glow.scale.set(1.3, 1.3, 1.3);
                     if (obj.pulseRing) {
@@ -3711,9 +3943,9 @@
                 // Make specific node extra prominent if it exists
                 if (obj.node.id === sectionId) {
                     obj.sphere.material.opacity = 1.0;
-                    obj.glow.material.opacity = 0.8;
-                    obj.sphere.scale.set(1.6, 1.6, 1.6);
-                    obj.glow.scale.set(1.8, 1.8, 1.8);
+                    obj.glow.material.opacity = 0.45;
+                    obj.sphere.scale.set(1.35, 1.35, 1.35);
+                    obj.glow.scale.set(1.5, 1.5, 1.5);
                     if (obj.pulseRing) {
                         obj.pulseRing.material.opacity = 0.4;
                         obj.pulseRing.scale.set(1.5, 1.5, 1.5);
@@ -3797,34 +4029,24 @@
                             fireflyUniforms.uPixelRatio.value = Math.min(window.devicePixelRatio, 2);
                         }
                         if (cardEntries.size) {
-                            cardsEnabled = width >= 560;
-                        } else if (width >= 560 && nodeObjects.length) {
+                            cardsEnabled = width >= CARDS_MIN_WIDTH && cardsViewportAllows();
+                        } else if (width >= CARDS_MIN_WIDTH && cardsViewportAllows() && nodeObjects.length) {
                             initNodeCards();
                         }
 
-                        // Adjust camera distance based on viewport
-                        const minDimension = Math.min(width, height);
-                        if (minDimension < 350) {
-                            camera.position.z = 7.5;
-                        } else if (minDimension < 500) {
-                            camera.position.z = 6.5;
-                        } else {
-                            camera.position.z = 6;
-                        }
+                        // Refit the globe to the resized canvas
+                        fitCameraToGlobe(width, height);
                     }
                     isResizing = false;
                 }, 150);
             });
 
-            // Initial camera adjustment based on viewport
+            // Initial camera adjustment once layout has settled
             setTimeout(() => {
                 const container = document.getElementById('graph');
                 const containerRect = container.getBoundingClientRect();
-                const minDimension = Math.min(containerRect.width, containerRect.height);
-                if (minDimension < 350) {
-                    camera.position.z = 7.5;
-                } else if (minDimension < 500) {
-                    camera.position.z = 6.5;
+                if (containerRect.width && containerRect.height) {
+                    fitCameraToGlobe(containerRect.width, containerRect.height);
                 }
             }, 100);
 

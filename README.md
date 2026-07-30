@@ -423,25 +423,72 @@ node's world position to canvas pixels each frame.
 - **Content:** `nodeCards[nodeId]` — optional `kicker`, `meter` (progress bar),
   `stats` (label/value rows), `tags` (chips), `link`. Rendered by
   `buildCardMarkup()`; all text passes through `escapeCardText()`.
-- **Layout:** the graph column is only ~500px wide, so cards pin to the canvas
-  **edges** (`CARD_EDGE`) rather than floating beside their node, and reach in
-  with a long tether. Max `MAX_PER_SIDE` per edge, with vertical collision
-  resolution; a card whose preferred side is full falls back to the other.
+- **Layout:** two regimes. The *hovered* node's card pops up directly beside it
+  (`HOVER_OFFSET` gap, flips flank when out of room, sits above edge cards via
+  `.is-hovered`). The ambient *featured* cards pin to the canvas **edges**
+  (`CARD_EDGE`) — the graph column is only ~500px wide — and reach in with a
+  long tether. Max `MAX_PER_SIDE` per edge with vertical collision resolution;
+  a card whose preferred side is full falls back to the other, and edge cards
+  dodge the hovered card when it intrudes into their band.
 - **Visibility:** driven by `frontness` — the dot of the node's normal against
   the camera direction. Nodes rotating to the back fade out.
 - **Disabled** below `CARDS_MIN_WIDTH` canvas width, and hidden by CSS under a
   900px viewport.
 
-Cards are `pointer-events: none` so they never intercept globe dragging. That
-also means links inside them are not clickable by design — clicking the node
-itself still opens the terminal readout.
+Cards are interactive once readable: past 50% opacity a card gains `.is-live`
+(`pointer-events: auto`). Clicking a card acts like clicking its node (opens the
+terminal readout), hovering lights it and holds the featured pair in place, and
+a `link` entry renders as a real `<a>` opening in a new tab. During a drag the
+layer gets `.is-dragging`, which force-disables card pointer events so a swipe
+crossing a card keeps rotating the globe instead of dying at the card edge.
+
+**Frame pacing:** every per-frame easing/decay constant (bloom strength, wake
+lerps, card fades, rotation smoothing, momentum damping) is tuned against a
+120Hz display (`REF_FPS`). `animate3D` computes `frameScale` — elapsed 120Hz
+frames — each frame; accumulations multiply by it and decays exponentiate by it
+(`easeK`), so the motion feels identical at any refresh rate. New per-frame
+constants must go through `frameScale`/`easeK` or they will run refresh-rate
+dependent.
+
+#### Node rendering & camera framing
+
+Each node is a layered "instrument contact", not a single sphere:
+
+| Piece | What it is | Who drives it |
+|---|---|---|
+| `sphere` | small category-colored dot (r 0.085), also the userData carrier | `highlightGraphNodes` / `resetGraphHighlight` own its opacity + scale |
+| `core` | white-hot kernel, child of `sphere` | opacity follows `sphere.material.opacity` each frame in `animate3D` (read-only) |
+| `glow` | tight additive light bleed (r 0.13) | highlight functions own opacity + scale |
+| `pulseRing` | thin reticle ring (r 0.15–0.165), billboarded to the camera every frame | `animate3D` owns opacity pulse + orientation |
+| `bloomHalo` | amber cursor-proximity halo, `visible` only when lit | firefly bloom only (`obj.proximity`) |
+| `hit` | invisible generous raycast target (r 0.19) | nothing — it exists so small dots stay easy to point at |
+
+**r128 raycast quirks this depends on:** invisible meshes ARE still raycast
+(that's why `hit` works), and `intersectObjects` recurses into children by
+default (that's why `core.raycast` is stubbed out — otherwise hits would land
+on the kernel and the `find(obj => obj.hit === ...)` lookup would miss).
+All raycast call sites target `obj.hit`, never the visual meshes.
+
+**Camera framing:** `fitCameraToGlobe(width, height)` replaces the old fixed
+camera distances. It fits the globe (plus `R_EFF` margin for rings/fireflies)
+to the *constraining* canvas axis — the old code keyed off `minDimension`,
+which overflowed the portrait globe column horizontally. It also syncs the
+firefly `uCamDist` uniform so point sizes survive any framing distance. Called
+from `initGraph`, the debounced resize handler, and the post-layout settle
+timeout — new camera-distance logic must go through it, not set `position.z`
+directly.
 
 #### Testing gotchas
 
-- **Headless Chrome cannot render this globe.** Under swiftshader the WebGL
-  canvas comes out empty — verified identical on an unmodified baseline, so an
-  empty globe in a headless screenshot is not a regression. DOM/SVG layers
-  (cards, tethers) *do* render, so headless is still useful for those.
+- **Headless rendering depends on GPU flags.** With `--disable-gpu` (or under
+  swiftshader) WebGL context creation fails and `initGraph` throws — nothing
+  works, not even cards. Plain `--headless=new` on a Mac uses the real GPU and
+  renders the globe fine, so `--screenshot` captures are trustworthy. Note that
+  under `--virtual-time-budget` requestAnimationFrame barely pumps, so
+  rAF-driven state (card fades, bloom) reads much earlier than wall-clock
+  timers suggest — verify interactions with injected-script diagnostics, not
+  pixels. macOS has no `timeout`; wrap Chrome with
+  `perl -e 'alarm N; exec @ARGV' -- <chrome ...>`.
 - **`--virtual-time-budget` never expires** against this page, because
   `animate3D` schedules `requestAnimationFrame` forever. Inject a head script
   that wraps `requestAnimationFrame` and stops scheduling after ~250 frames.
@@ -476,9 +523,9 @@ itself still opens the terminal readout.
 4. **Graph Dimensions**: Modify height constraints in mobile-specific `.graph-container`
 
 #### 3D Interaction Tuning
-1. **Node Hover Scaling**: Modify scale values in `onGraphMouseMove()` (default: 1.2x sphere, 1.3x glow)
-2. **Raycaster Sensitivity**: Adjust sphere geometry radius for collision detection
-3. **Animation Smoothness**: Modify transition durations in CSS for `.sphere` and `.glow` elements
+1. **Node Hover Scaling**: Modify scale values in `onGraphMouseMove()` (default: 1.18x sphere, 1.28x glow — kept subtle because the popped card is the primary hover feedback)
+2. **Raycaster Sensitivity**: Adjust the shared `hitGeometry` radius (default 0.19) — NOT the visible sphere geometry
+3. **Globe Framing**: Adjust `R_EFF` / `FILL` inside `fitCameraToGlobe()`
 4. **Performance**: Increase resize debounce timeout (default: 250ms) for slower devices
 
 This architecture ensures maintainability through clear separation of concerns and well-defined dependencies between systems.
