@@ -12,6 +12,15 @@ An interactive terminal-themed personal portfolio website featuring a 3D graph v
 
 Built with vanilla HTML/CSS/JavaScript and Three.js - no frameworks, demonstrating core web development skills.
 
+## Content source of truth
+
+Review and edit portfolio facts and copy in
+[`personal_website_content.md`](personal_website_content.md) first. That file
+tracks the stable IDs used by the detailed pages, terminal readouts, globe
+nodes, and preview cards, plus unresolved factual questions. The current
+single-file website still duplicates copy in `index.html`, so approved content
+must be synced there until the site is refactored to load structured data.
+
 ---
 
 ## Technical Documentation
